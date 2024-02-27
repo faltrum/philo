@@ -1,26 +1,11 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/02/19 11:12:20 by oseivane          #+#    #+#             */
-/*   Updated: 2024/02/19 12:46:05 by oseivane         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "philo.h"
 
 int	ft_atoi(const char *str)
 {
-	int	i;
-	int	result;
-	int	sign;
+	int	i = 0;
+	int	result = 0;
+	int	sign = 1;
 
-	i = 0;
-	result = 0;
-	sign = 1;
 	while (str[i] == ' ' || (str[i] >= 9 && str[i] <= 13))
 		i++;
 	if (str[i] == '-')
@@ -50,7 +35,7 @@ long long	get_time_in_ms(void)
 	struct timeval	current_time;
 
 	gettimeofday(&current_time, NULL);
-	return ((current_time.tv_sec * 1000) + (current_time.tv_usec / 1000));
+	return ((current_time.tv_sec * 1000) + (current_time.tv_usec / 1000));	
 }
 
 void	pause_time(t_information *info, long long wait_time)
@@ -63,7 +48,7 @@ void	pause_time(t_information *info, long long wait_time)
 	{
 		now = get_time_in_ms();
 		if ((now - start) >= wait_time)
-			break ;
-		usleep(1000);
+			break;
+		usleep(10);
 	}
 }

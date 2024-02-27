@@ -1,15 +1,3 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2024/02/19 11:12:03 by oseivane          #+#    #+#              #
-#    Updated: 2024/02/19 12:19:13 by oseivane         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
 # Print PHILOSOPHER and author name
 PHILO_MSG = PHILOSOPHER
 AUTHOR_MSG = by oseivane "el calamidades"
@@ -45,7 +33,8 @@ SRC = 	main \
 		utils \
 		init \
 		threads \
-		philoest
+		philoest \
+		barrier
 
 SOURCES = $(addprefix $(SRC_DIR), $(addsuffix .c, $(SRC)))
 
@@ -64,7 +53,7 @@ $(NAME):	$(OBJECTS)
 	@echo "$(GREEN)Linked!$(RESET)✅"
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c $(INCLUDES_DIR) | $(OBJF) 
-			gcc $(CFLAGS) $(INCLUDES) -c $< -o $@ 
+			gcc $(CFLAGS) $(INCLUDES) -c $< -o $@
 $(OBJF):
 		@mkdir -p $(OBJ_DIR)
 clean:
