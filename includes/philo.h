@@ -6,7 +6,7 @@
 /*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:46:57 by oseivane          #+#    #+#             */
-/*   Updated: 2024/03/04 11:06:50 by oseivane         ###   ########.fr       */
+/*   Updated: 2024/03/04 14:39:11 by oseivane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,15 +62,14 @@
 # define SLEEP "is sleeping"
 # define THINK "is thinking"
 # define DIE "died"
-
+/*
 typedef struct s_barrier
 {
 	pthread_mutex_t	mutex;
-	pthread_mutex_t	count_mutex;
 	int				count;
 	int				n;
 }	t_barrier;
-
+*/
 typedef struct s_philosophers
 {
 	int						id;
@@ -80,7 +79,7 @@ typedef struct s_philosophers
 	long long				last_eat;
 	int						eat_count;
 	struct s_information	*info;
-}	t_philosopers;	
+}	t_philosophers;	
 
 typedef struct s_information
 {
@@ -99,23 +98,23 @@ typedef struct s_information
 //Init the structures
 void		init_info_with_args(t_information *info, int ac, char **av);
 void		init_mutex_forks(t_information *info);
-void		init_philo_info(t_philosopers **philo, t_information *info);
+void		init_philo_info(t_philosophers **philo, t_information *info);
 
 //Barrier
-void		barrier_init(t_barrier *barrier, int n);
+/*void		barrier_init(t_barrier *barrier, int n);
 void		barrier_wait(t_barrier *barrier);
-void		barrier_destroy(t_barrier *barrier);
+void		barrier_destroy(t_barrier *barrier);*/
 
 //threads
 void		*philo_routine(void *data);
-void		start_philo_threads(t_philosopers *philo, t_information *info);
-void		free_all_thread(t_philosopers *philo, t_information *info);
-void		check_dead_or_finish(t_philosopers *philo, t_information *info);
+void		start_philo_threads(t_philosophers *philo, t_information *info);
+void		free_all_thread(t_philosophers *philo, t_information *info);
+void		check_dead_or_finish(t_philosophers *philo, t_information *info);
 
 //EST
 
-void		philo_eat_with_two_fork(t_philosopers *philo, t_information *info);
-void		philo_sleep_and_think(t_philosopers *philo, t_information *info);
+void		philo_eat_with_two_fork(t_philosophers *philo, t_information *info);
+void		philo_sleep_and_think(t_philosophers *philo, t_information *info);
 
 //printing.c
 void		print_error_msg(char *msg);

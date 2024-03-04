@@ -6,7 +6,7 @@
 /*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:47:35 by oseivane          #+#    #+#             */
-/*   Updated: 2024/03/04 10:51:23 by oseivane         ###   ########.fr       */
+/*   Updated: 2024/03/04 14:39:32 by oseivane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,14 @@
 void	*philo_routine(void *data)
 {
 	t_information	*info;
-	t_philosopers	*philo;
+	t_philosophers	*philo;
 
 	philo = data;
 	info = philo->info;
 	if (philo->id % 2)
 		usleep(1000);
 	else
-		usleep(500);
+		usleep(333);
 	while (!info->finish)
 	{
 		philo_eat_with_two_fork(philo, info);
@@ -36,12 +36,12 @@ void	*philo_routine(void *data)
 	return ((void *)0);
 }
 
-void	start_philo_threads(t_philosopers *philo, t_information *info)
+void	start_philo_threads(t_philosophers *philo, t_information *info)
 {
 	int			i;
-	t_barrier	barrier;
+	//t_barrier	barrier;
 
-	barrier_init(&barrier, info->nbr_philo + 1);
+	//barrier_init(&barrier, info->nbr_philo);
 	i = 0;
 	while (i < info->nbr_philo)
 	{
@@ -51,16 +51,16 @@ void	start_philo_threads(t_philosopers *philo, t_information *info)
 			print_error_msg(ERROR_START_PHILO);
 		i++;
 	}
-	barrier_wait(&barrier);
+	//barrier_wait(&barrier);
 	check_dead_or_finish(philo, info);
 	i = 0;
 	while (i < info->nbr_philo)
 		pthread_join(philo[i++].thread, NULL);
 	free_all_thread(philo, info);
-	barrier_destroy(&barrier);
+	//barrier_destroy(&barrier);
 }
 
-void	free_all_thread(t_philosopers *philo, t_information *info)
+void	free_all_thread(t_philosophers *philo, t_information *info)
 {
 	int	i;
 
@@ -72,7 +72,7 @@ void	free_all_thread(t_philosopers *philo, t_information *info)
 	pthread_mutex_destroy(&(info->lock));
 }
 
-void	check_dead_or_finish(t_philosopers *philo, t_information *info)
+void	check_dead_or_finish(t_philosophers *philo, t_information *info)
 {
 	int			i;
 	long long	current_time;

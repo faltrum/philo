@@ -6,7 +6,7 @@
 /*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:47:14 by oseivane          #+#    #+#             */
-/*   Updated: 2024/03/04 10:50:53 by oseivane         ###   ########.fr       */
+/*   Updated: 2024/03/04 13:16:52 by oseivane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,12 +48,12 @@ void	init_mutex_forks(t_information *info)
 	}
 }
 
-void	init_philo_info(t_philosopers **philo, t_information *info)
+void	init_philo_info(t_philosophers **philo, t_information *info)
 {
 	int	i;
 
 	i = 0;
-	*philo = (t_philosopers *)malloc(sizeof(t_philosopers) * info->nbr_philo);
+	*philo = (t_philosophers *)malloc(sizeof(t_philosophers) * info->nbr_philo);
 	if (!(philo))
 		print_error_msg(ERROR_MALLOC_PHILO);
 	while (i < info->nbr_philo)

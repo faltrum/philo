@@ -6,13 +6,13 @@
 /*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:47:25 by oseivane          #+#    #+#             */
-/*   Updated: 2024/03/04 10:47:26 by oseivane         ###   ########.fr       */
+/*   Updated: 2024/03/04 13:17:31 by oseivane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	philo_eat_with_two_fork(t_philosopers *philo, t_information *info)
+void	philo_eat_with_two_fork(t_philosophers *philo, t_information *info)
 {
 	pthread_mutex_lock(&(info->forks[philo->left]));
 	philo_display(info, philo->id, COLOR_RED TAKE_FORK NO_COLOR);
@@ -29,7 +29,7 @@ void	philo_eat_with_two_fork(t_philosopers *philo, t_information *info)
 	pthread_mutex_unlock(&(info->forks[philo->left]));
 }
 
-void	philo_sleep_and_think(t_philosopers *philo, t_information *info)
+void	philo_sleep_and_think(t_philosophers *philo, t_information *info)
 {
 	philo_display(info, philo->id, COLOR_GREEN SLEEP NO_COLOR);
 	pause_time(info, (long long)info->sleep_time);

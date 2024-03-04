@@ -6,7 +6,7 @@
 /*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:47:41 by oseivane          #+#    #+#             */
-/*   Updated: 2024/03/04 10:47:42 by oseivane         ###   ########.fr       */
+/*   Updated: 2024/03/04 12:12:00 by oseivane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,6 @@ void	pause_time(t_information *info, long long wait_time)
 		now = get_time_in_ms();
 		if ((now - start) >= wait_time)
 			break ;
-		usleep(10);
+		usleep(1000);
 	}
 }

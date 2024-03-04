@@ -6,7 +6,7 @@
 /*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:47:20 by oseivane          #+#    #+#             */
-/*   Updated: 2024/03/04 10:47:21 by oseivane         ###   ########.fr       */
+/*   Updated: 2024/03/04 13:16:16 by oseivane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 int	main(int ac, char **av)
 {
 	t_information	info;
-	t_philosopers	*philo;	
+	t_philosophers	*philo;	
 
 	if (ac != 5 && ac != 6)
 		print_usage();
