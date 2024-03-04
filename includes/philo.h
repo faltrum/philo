@@ -1,12 +1,24 @@
-#ifndef PHILO_H
-#define PHILO_H
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/04 10:46:57 by oseivane          #+#    #+#             */
+/*   Updated: 2024/03/04 11:06:50 by oseivane         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
-#include <pthread.h>
-#include <sys/time.h>
+#ifndef PHILO_H
+# define PHILO_H
+
+# include <stdlib.h>
+# include <stdio.h>
+# include <string.h>
+# include <unistd.h>
+# include <pthread.h>
+# include <sys/time.h>
 
 //Definir colores
 
@@ -54,7 +66,7 @@
 typedef struct s_barrier
 {
 	pthread_mutex_t	mutex;
-	pthread_cond_t	cond;
+	pthread_mutex_t	count_mutex;
 	int				count;
 	int				n;
 }	t_barrier;
@@ -85,35 +97,35 @@ typedef struct s_information
 }	t_information;
 
 //Init the structures
-void	init_info_with_args(t_information *info, int ac, char **av);
-void	init_mutex_forks(t_information *info);
-void	init_philo_info(t_philosopers **philo, t_information *info);
+void		init_info_with_args(t_information *info, int ac, char **av);
+void		init_mutex_forks(t_information *info);
+void		init_philo_info(t_philosopers **philo, t_information *info);
 
 //Barrier
-void	barrier_init(t_barrier *barrier, int n);
-void	barrier_wait(t_barrier *barrier);
-void	barrier_destroy(t_barrier *barrier);
+void		barrier_init(t_barrier *barrier, int n);
+void		barrier_wait(t_barrier *barrier);
+void		barrier_destroy(t_barrier *barrier);
 
 //threads
-void	*philo_routine(void *data);
-void	start_philo_threads(t_philosopers *philo, t_information *info);
-void	free_all_thread(t_philosopers *philo, t_information *info);
-void	check_dead_or_finish(t_philosopers *philo, t_information *info);
+void		*philo_routine(void *data);
+void		start_philo_threads(t_philosopers *philo, t_information *info);
+void		free_all_thread(t_philosopers *philo, t_information *info);
+void		check_dead_or_finish(t_philosopers *philo, t_information *info);
 
 //EST
 
-void	philo_eat_with_two_fork(t_philosopers *philo, t_information *info);
-void	philo_sleep_and_think(t_philosopers *philo, t_information *info);
+void		philo_eat_with_two_fork(t_philosopers *philo, t_information *info);
+void		philo_sleep_and_think(t_philosopers *philo, t_information *info);
 
 //printing.c
-void	print_error_msg(char *msg);
-void	print_usage(void);
-void	philo_display(t_information *info, int id, char *msg);
+void		print_error_msg(char *msg);
+void		print_usage(void);
+void		philo_display(t_information *info, int id, char *msg);
 
 //utils.c
-int	ft_atoi(const char *str);
-int	ft_strcmp(char *s1, char *s2);
+int			ft_atoi(const char *str);
+int			ft_strcmp(char *s1, char *s2);
 long long	get_time_in_ms(void);
-void	pause_time(t_information *info, long long wait_time);
+void		pause_time(t_information *info, long long wait_time);
 
 #endif

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   threads.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/04 10:47:35 by oseivane          #+#    #+#             */
+/*   Updated: 2024/03/04 10:51:23 by oseivane         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
 void	*philo_routine(void *data)
@@ -17,7 +29,7 @@ void	*philo_routine(void *data)
 		if (info->nbr_to_eat == philo->eat_count)
 		{
 			info->finished_eat++;
-			break;
+			break ;
 		}
 		philo_sleep_and_think(philo, info);
 	}
@@ -30,12 +42,12 @@ void	start_philo_threads(t_philosopers *philo, t_information *info)
 	t_barrier	barrier;
 
 	barrier_init(&barrier, info->nbr_philo + 1);
-	
 	i = 0;
 	while (i < info->nbr_philo)
 	{
 		philo[i].last_eat = get_time_in_ms();
-		if (pthread_create(&(philo[i].thread), NULL, philo_routine, &(philo[i])))
+		if (pthread_create(&(philo[i].thread),
+				NULL, philo_routine, &(philo[i])))
 			print_error_msg(ERROR_START_PHILO);
 		i++;
 	}
@@ -70,7 +82,7 @@ void	check_dead_or_finish(t_philosopers *philo, t_information *info)
 		if ((info->nbr_to_eat != 0) && (info->nbr_philo == info->finished_eat))
 		{
 			info->finish = 1;
-			break;
+			break ;
 		}
 		i = 0;
 		while (i < info->nbr_philo)
@@ -80,7 +92,7 @@ void	check_dead_or_finish(t_philosopers *philo, t_information *info)
 			{
 				philo_display(info, i, COLOR_PURPLE DIE NO_COLOR);
 				info->finish = 1;
-				break;
+				break ;
 			}
 			i++;
 		}

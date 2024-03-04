@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   init.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/04 10:47:14 by oseivane          #+#    #+#             */
+/*   Updated: 2024/03/04 10:50:53 by oseivane         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
 void	init_info_with_args(t_information *info, int ac, char **av)
@@ -24,7 +36,8 @@ void	init_mutex_forks(t_information *info)
 	i = 0;
 	if (pthread_mutex_init(&(info->lock), NULL))
 		print_error_msg(ERROR_MUTEX_LOCK);
-	info->forks = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * info->nbr_philo);
+	info->forks = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t)
+			* info->nbr_philo);
 	if (!(info->forks))
 		print_error_msg(ERROR_MALLOC_FORK);
 	while (i < info->nbr_philo)
