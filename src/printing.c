@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   printing.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:47:30 by oseivane          #+#    #+#             */
-/*   Updated: 2024/03/04 10:47:31 by oseivane         ###   ########.fr       */
+/*   Updated: 2024/03/06 23:46:06 by mac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,21 @@ void	print_error_msg(char *msg)
 		printf("%s", COLOR_LIGHT_CYAN);
 		printf("%s", ARGC_TIMES_EAT);
 		printf("%s", COLOR_RED);
-		printf(" %s\n", ERROR_NBR_INF_0);
+		printf(" %s\n", ERROR_NBR_INF_1);
+	}
+	else if (!ft_strcmp(msg, ARGC_EAT_TIME))
+	{
+		printf("%s", COLOR_LIGHT_CYAN);
+		printf("%s", ARGC_EAT_TIME);
+		printf("%s", COLOR_RED);
+		printf(" %s\n", ERROR_TIME);
+	}
+	else if (!ft_strcmp(msg, ARGC_SLEEP_TIME))
+	{
+		printf("%s", COLOR_LIGHT_CYAN);
+		printf("%s", ARGC_SLEEP_TIME);
+		printf("%s", COLOR_RED);
+		printf(" %s\n", ERROR_TIME);
 	}
 	else
 	{

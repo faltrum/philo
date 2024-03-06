@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:47:14 by oseivane          #+#    #+#             */
-/*   Updated: 2024/03/04 13:16:52 by oseivane         ###   ########.fr       */
+/*   Updated: 2024/03/06 23:47:56 by mac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,16 @@ void	init_info_with_args(t_information *info, int ac, char **av)
 	info->die_time = ft_atoi(av[2]);
 	info->eat_time = ft_atoi(av[3]);
 	info->sleep_time = ft_atoi(av[4]);
-	if (info->nbr_philo <= 0)
+	if (info->nbr_philo <= 0 || info->nbr_philo > 200)
 		print_error_msg(ARGC_NBR_PHILO);
+	if (info->eat_time < 60)
+		print_error_msg(ARGC_EAT_TIME);
+	if (info->sleep_time < 60)
+		print_error_msg(ARGC_SLEEP_TIME);
 	if (ac == 6)
 	{
 		info->nbr_to_eat = ft_atoi(av[5]);
-		if (info->nbr_to_eat == 0)
+		if (info->nbr_to_eat <= 0 || info->nbr_to_eat > 2147483647)
 			print_error_msg(ARGC_TIMES_EAT);
 	}
 }

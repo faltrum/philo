@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philoest.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:47:25 by oseivane          #+#    #+#             */
-/*   Updated: 2024/03/04 13:17:31 by oseivane         ###   ########.fr       */
+/*   Updated: 2024/03/06 14:22:34 by mac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@ void	philo_eat_with_two_fork(t_philosophers *philo, t_information *info)
 		philo_display(info, philo->id, COLOR_YELLOW EAT NO_COLOR);
 		philo->last_eat = get_time_in_ms();
 		philo->eat_count += 1;
-		pause_time(info, (long long)info->eat_time);
+		//pause_time(info, (long long)info->eat_time);
+		pause_time((long long)info->eat_time);
 		pthread_mutex_unlock(&(info->forks[philo->right]));
 	}
 	pthread_mutex_unlock(&(info->forks[philo->left]));
@@ -32,6 +33,7 @@ void	philo_eat_with_two_fork(t_philosophers *philo, t_information *info)
 void	philo_sleep_and_think(t_philosophers *philo, t_information *info)
 {
 	philo_display(info, philo->id, COLOR_GREEN SLEEP NO_COLOR);
-	pause_time(info, (long long)info->sleep_time);
+	//pause_time(info, (long long)info->sleep_time);
+	pause_time((long long)info->sleep_time);
 	philo_display(info, philo->id, COLOR_BLUE THINK NO_COLOR);
 }

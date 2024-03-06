@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:46:57 by oseivane          #+#    #+#             */
-/*   Updated: 2024/03/04 14:39:11 by oseivane         ###   ########.fr       */
+/*   Updated: 2024/03/06 23:44:45 by mac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,12 +45,15 @@
 # define ERROR_MSG "Error ->"
 # define USAGE "Usage :"
 # define PROGRAM_NAME "./philo"
+# define ARGS_RE_NBR "Arguments must be numbers"
 # define ARGC_NBR_PHILO "[number_of_philosophers]"
 # define ARGC_DIE_TIME "[time_to_die]"
 # define ARGC_EAT_TIME "[time_to_eat]"
 # define ARGC_SLEEP_TIME "[time_to_sleep]"
 # define ARGC_TIMES_EAT "[number_of_times_each_philosopher_must_eat]"
-# define ERROR_NBR_INF_0 "should be > 0"
+# define ERROR_NBR_INF_0 "should be > 0 and <= 200"
+# define ERROR_NBR_INF_1 "should be > 0 and < 2147483648"
+# define ERROR_TIME "should be >= 60"
 # define ERROR_MUTEX_LOCK "pthread_mutex_init (info->lock) fail !"
 # define ERROR_MALLOC_FORK "malloc pthread_mutex_t *fork fail !"
 # define ERROR_MUTEX_FORK "pthread_mutex_init (info->fork) fail !"
@@ -62,14 +65,14 @@
 # define SLEEP "is sleeping"
 # define THINK "is thinking"
 # define DIE "died"
-/*
-typedef struct s_barrier
+
+/*typedef struct s_barrier
 {
 	pthread_mutex_t	mutex;
 	int				count;
 	int				n;
-}	t_barrier;
-*/
+}	t_barrier;*/
+
 typedef struct s_philosophers
 {
 	int						id;
@@ -99,12 +102,12 @@ typedef struct s_information
 void		init_info_with_args(t_information *info, int ac, char **av);
 void		init_mutex_forks(t_information *info);
 void		init_philo_info(t_philosophers **philo, t_information *info);
-
+/*
 //Barrier
-/*void		barrier_init(t_barrier *barrier, int n);
+void		barrier_init(t_barrier *barrier, int n);
 void		barrier_wait(t_barrier *barrier);
-void		barrier_destroy(t_barrier *barrier);*/
-
+void		barrier_destroy(t_barrier *barrier);
+*/
 //threads
 void		*philo_routine(void *data);
 void		start_philo_threads(t_philosophers *philo, t_information *info);
@@ -122,9 +125,11 @@ void		print_usage(void);
 void		philo_display(t_information *info, int id, char *msg);
 
 //utils.c
+int			ft_is_digit(char c);
 int			ft_atoi(const char *str);
 int			ft_strcmp(char *s1, char *s2);
 long long	get_time_in_ms(void);
-void		pause_time(t_information *info, long long wait_time);
+//void		pause_time(t_information *info, long long wait_time);
+void		pause_time(long long milisecs);
 
 #endif

@@ -1,40 +1,4 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   threads.c                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/04 10:47:35 by oseivane          #+#    #+#             */
-/*   Updated: 2024/03/04 14:39:32 by oseivane         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "philo.h"
-
-void	*philo_routine(void *data)
-{
-	t_information	*info;
-	t_philosophers	*philo;
-
-	philo = data;
-	info = philo->info;
-	if (philo->id % 2)
-		usleep(1000);
-	else
-		usleep(333);
-	while (!info->finish)
-	{
-		philo_eat_with_two_fork(philo, info);
-		if (info->nbr_to_eat == philo->eat_count)
-		{
-			info->finished_eat++;
-			break ;
-		}
-		philo_sleep_and_think(philo, info);
-	}
-	return ((void *)0);
-}
 
 void	start_philo_threads(t_philosophers *philo, t_information *info)
 {
@@ -60,16 +24,37 @@ void	start_philo_threads(t_philosophers *philo, t_information *info)
 	//barrier_destroy(&barrier);
 }
 
-void	free_all_thread(t_philosophers *philo, t_information *info)
+void	*philo_routine(void *data)
 {
-	int	i;
+	t_information	*info;
+	t_philosophers	*philo;
+	//t_barrier		barrier;
 
-	i = 0;
-	while (i < info->nbr_philo)
-		pthread_mutex_destroy(&(info->forks[i++]));
-	free(philo);
-	free(info->forks);
-	pthread_mutex_destroy(&(info->lock));
+	philo = data;
+	info = philo->info;
+/*
+	// Incrementa el contador de la barrera
+    pthread_mutex_lock(&barrier.mutex);
+    barrier.count++;
+    pthread_mutex_unlock(&barrier.mutex);
+
+    // Espera en la barrera
+    barrier_wait(&barrier);*/
+	if (philo->id % 2)
+		usleep(1000);
+	else
+		usleep(500);
+	while (!info->finish)
+	{
+		philo_eat_with_two_fork(philo, info);
+		if (info->nbr_to_eat == philo->eat_count)
+		{
+			info->finished_eat++;
+			break ;
+		}
+		philo_sleep_and_think(philo, info);
+	}
+	return ((void *)0);
 }
 
 void	check_dead_or_finish(t_philosophers *philo, t_information *info)
@@ -98,3 +83,16 @@ void	check_dead_or_finish(t_philosophers *philo, t_information *info)
 		}
 	}
 }
+
+void	free_all_thread(t_philosophers *philo, t_information *info)
+{
+	int	i;
+
+	i = 0;
+	while (i < info->nbr_philo)
+		pthread_mutex_destroy(&(info->forks[i++]));
+	free(philo);
+	free(info->forks);
+	pthread_mutex_destroy(&(info->lock));
+}
+
