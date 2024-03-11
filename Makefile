@@ -31,7 +31,7 @@ OBJF = .cache_exists
 SRC = 	main \
 		printing \
 		utils \
-		init \
+		init_check \
 		threads \
 		philoest \
 		barrier

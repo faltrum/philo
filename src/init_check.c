@@ -1,16 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init.c                                             :+:      :+:    :+:   */
+/*   init_check.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:47:14 by oseivane          #+#    #+#             */
-/*   Updated: 2024/03/06 23:47:56 by mac              ###   ########.fr       */
+/*   Updated: 2024/03/10 19:05:18 by mac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+int	check_args(int ac, char **av)
+{
+	int	i;
+	int	j;
+
+	i = 1;
+	j = 0;
+	if (ac != 5 && ac != 6)
+		print_usage();
+	while (av[i])
+	{
+		while (av[i][j])
+		{
+			if (!ft_is_digit(av[i][j]))
+			{
+				print_error_msg(ARGS_RE_NBR);
+			}
+			j++;
+		}
+		j = 0;
+		i++;
+	}
+	return (EXIT_SUCCESS);
+}
 
 void	init_info_with_args(t_information *info, int ac, char **av)
 {
@@ -21,6 +46,8 @@ void	init_info_with_args(t_information *info, int ac, char **av)
 	info->sleep_time = ft_atoi(av[4]);
 	if (info->nbr_philo <= 0 || info->nbr_philo > 200)
 		print_error_msg(ARGC_NBR_PHILO);
+	if (info->die_time < 60)
+		print_error_msg(ARGC_DIE_TIME);
 	if (info->eat_time < 60)
 		print_error_msg(ARGC_EAT_TIME);
 	if (info->sleep_time < 60)
@@ -68,6 +95,7 @@ void	init_philo_info(t_philosophers **philo, t_information *info)
 		(*philo)[i].eat_count = 0;
 		(*philo)[i].last_eat = get_time_in_ms();
 		(*philo)[i].right = ((i + 1) % info->nbr_philo);
+		//pthread_mutex_init(&((*philo)[i].mutex), NULL);
 		i++;
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:47:30 by oseivane          #+#    #+#             */
-/*   Updated: 2024/03/06 23:46:06 by mac              ###   ########.fr       */
+/*   Updated: 2024/03/10 19:11:27 by mac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,26 +22,33 @@ void	print_error_msg(char *msg)
 		printf("%s", COLOR_RED);
 		printf(" %s\n", ERROR_NBR_INF_0);
 	}
-	else if (!ft_strcmp(msg, ARGC_TIMES_EAT))
+	else if (!ft_strcmp(msg, ARGC_DIE_TIME))
 	{
-		printf("%s", COLOR_LIGHT_CYAN);
-		printf("%s", ARGC_TIMES_EAT);
+		printf("%s", COLOR_PURPLE);
+		printf("%s", ARGC_DIE_TIME);
 		printf("%s", COLOR_RED);
-		printf(" %s\n", ERROR_NBR_INF_1);
+		printf(" %s\n", ERROR_TIME);
 	}
 	else if (!ft_strcmp(msg, ARGC_EAT_TIME))
 	{
-		printf("%s", COLOR_LIGHT_CYAN);
+		printf("%s", COLOR_YELLOW);
 		printf("%s", ARGC_EAT_TIME);
 		printf("%s", COLOR_RED);
 		printf(" %s\n", ERROR_TIME);
 	}
 	else if (!ft_strcmp(msg, ARGC_SLEEP_TIME))
 	{
-		printf("%s", COLOR_LIGHT_CYAN);
+		printf("%s", COLOR_GREEN);
 		printf("%s", ARGC_SLEEP_TIME);
 		printf("%s", COLOR_RED);
 		printf(" %s\n", ERROR_TIME);
+	}
+	else if (!ft_strcmp(msg, ARGC_TIMES_EAT))
+	{
+		printf("%s", COLOR_DARK_GRAY);
+		printf("%s", ARGC_TIMES_EAT);
+		printf("%s", COLOR_RED);
+		printf(" %s\n", ERROR_NBR_INF_1);
 	}
 	else
 	{
@@ -73,23 +80,4 @@ void	print_usage(void)
 	printf(" %s", ARGC_TIMES_EAT);
 	printf("%s", NO_COLOR);
 	exit(EXIT_FAILURE);
-}
-
-void	philo_display(t_information *info, int id, char *msg)
-{
-	long long	now;
-
-	now = get_time_in_ms();
-	pthread_mutex_lock(&(info->lock));
-	if (!(info->finish))
-	{
-		printf("%s", COLOR_ORANGE);
-		printf("%lld ", (now - info->creation_time));
-		printf("%s", NO_COLOR);
-		printf("%s", COLOR_LIGHT_CYAN);
-		printf("%d ", id + 1);
-		printf("%s", NO_COLOR);
-		printf("%s\n", msg);
-	}
-	pthread_mutex_unlock(&(info->lock));
 }

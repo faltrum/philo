@@ -6,7 +6,7 @@
 /*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:47:41 by oseivane          #+#    #+#             */
-/*   Updated: 2024/03/06 14:31:50 by mac              ###   ########.fr       */
+/*   Updated: 2024/03/10 01:03:42 by mac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,6 @@ int	ft_atoi(const char *str)
 	while (str[i] == ' ' || (str[i] >= 9 && str[i] <= 13))
 		i++;
 	if (str[i] == '-')
-		print_error_msg(ERROR_NEGATIVE_ARG);
-	if ((str[i] >='a' && str[i] <= 'z'))
 		print_error_msg(ERROR_NEGATIVE_ARG);
 	else if (str[i] == '+')
 		i++;
@@ -61,18 +59,18 @@ long long	get_time_in_ms(void)
 	gettimeofday(&current_time, NULL);
 	return ((current_time.tv_sec * 1000) + (current_time.tv_usec / 1000));
 }
-
+/*
 void	pause_time(long long milisecs)
 {
-	long	start;
+	long long	start;
 
 	start = get_time_in_ms();
 	usleep(milisecs * 850);
 	while (get_time_in_ms() - start < milisecs)
 		usleep(milisecs * 5);
-}
+}*/
 
-/*void	pause_time(t_information *info, long long wait_time)
+void	pause_time(t_information *info, long long wait_time)
 {
 	long long	now;
 	long long	start;
@@ -85,4 +83,4 @@ void	pause_time(long long milisecs)
 			break ;
 		usleep(100);
 	}
-}*/
+}

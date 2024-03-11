@@ -30,40 +30,46 @@
 # define ERROR_MSG "Error ->"
 # define USAGE "Usage :"
 # define PROGRAM_NAME "./philo"
+# define ARGS_RE_NBR "Arguments must be numbers"
 # define ARGC_NBR_PHILO "[number_of_philosophers]"
 # define ARGC_DIE_TIME "[time_to_die]"
 # define ARGC_EAT_TIME "[time_to_eat]"
 # define ARGC_SLEEP_TIME "[time_to_sleep]"
 # define ARGC_TIMES_EAT "[number_of_times_each_philosopher_must_eat]"
-# define ERROR_NBR_INF_0 "should be > 0"
+# define ERROR_NBR_INF_0 "should be > 0 and <= 200"
+# define ERROR_NBR_INF_1 "should be > 0 and < 2147483648"
+# define ERROR_TIME "should be >= 60"
 # define ERROR_MUTEX_LOCK "pthread_mutex_init (info->lock) fail !"
 # define ERROR_MALLOC_FORK "malloc pthread_mutex_t *fork fail !"
 # define ERROR_MUTEX_FORK "pthread_mutex_init (info->fork) fail !"
 # define ERROR_MALLOC_PHILO "malloc philosophers fail !"
 # define ERROR_START_PHILO "pthread_create Philosophers fail !"
-# define ERROR_NEGATIVE_ARG "Negative number found in argument !"
+# define ERROR_NEGATIVE_ARG "Negative number found in argument ! "
 # define TAKE_FORK "has taken a fork"
 # define EAT "is eating"
 # define SLEEP "is sleeping"
 # define THINK "is thinking"
 # define DIE "died"
-/*
+
 typedef struct s_barrier
 {
 	pthread_mutex_t	mutex;
 	int				count;
 	int				n;
 }	t_barrier;
-*/
+
 typedef struct s_philosophers
 {
 	int						id;
 	int						left;
 	int						right;
 	pthread_t				thread;
+	pthread_mutex_t			mutex;
 	long long				last_eat;
+	int						is_dead;
 	int						eat_count;
 	struct s_information	*info;
+	t_barrier				*barrier;
 }	t_philosophers;	
 
 typedef struct s_information
@@ -127,7 +133,21 @@ void	print_error_msg(char *msg)
 		printf("%s", COLOR_LIGHT_CYAN);
 		printf("%s", ARGC_TIMES_EAT);
 		printf("%s", COLOR_RED);
-		printf(" %s\n", ERROR_NBR_INF_0);
+		printf(" %s\n", ERROR_NBR_INF_1);
+	}
+	else if (!ft_strcmp(msg, ARGC_EAT_TIME))
+	{
+		printf("%s", COLOR_LIGHT_CYAN);
+		printf("%s", ARGC_EAT_TIME);
+		printf("%s", COLOR_RED);
+		printf(" %s\n", ERROR_TIME);
+	}
+	else if (!ft_strcmp(msg, ARGC_SLEEP_TIME))
+	{
+		printf("%s", COLOR_LIGHT_CYAN);
+		printf("%s", ARGC_SLEEP_TIME);
+		printf("%s", COLOR_RED);
+		printf(" %s\n", ERROR_TIME);
 	}
 	else
 	{
@@ -232,10 +252,10 @@ void	pause_time(t_information *info, long long wait_time)
 		now = get_time_in_ms();
 		if ((now - start) >= wait_time)
 			break ;
-		usleep(1000);
+		usleep(100);
 	}
 }
-/*
+
 //Se incializa la barrera 
 void	barrier_init(t_barrier *barrier, int n)
 {
@@ -244,13 +264,22 @@ void	barrier_init(t_barrier *barrier, int n)
 	pthread_mutex_init(&barrier->mutex, NULL);
 }
 
-//Función de espera en la barrera
 void	barrier_wait(t_barrier *barrier)
 {
 	pthread_mutex_lock(&barrier->mutex);
 	barrier->count++;
-	pthread_mutex_unlock(&barrier->mutex);
-	while (1)
+	if (barrier->count < barrier->n)
+	{
+		pthread_mutex_unlock(&barrier->mutex);
+		while (barrier->count <barrier->n);
+	}
+	else
+	{
+		barrier->count = 0;
+		pthread_mutex_unlock(&barrier->mutex);
+	}
+	
+	/*while (1)
 	{
 		pthread_mutex_lock(&barrier->mutex);
 		if (barrier->count >= barrier->n)
@@ -259,10 +288,10 @@ void	barrier_wait(t_barrier *barrier)
 			break ;
 		}
 		pthread_mutex_unlock(&barrier->mutex);
-		usleep(1000);
+		usleep(100);
 	}
 	while (barrier->count < barrier->n)
-		usleep(1000);
+		usleep(100);*/
 }
 
 //Funcion para liberar recursos de la barrera
@@ -271,7 +300,32 @@ void	barrier_destroy(t_barrier *barrier)
 {
 	pthread_mutex_destroy(&barrier->mutex);
 }
-*/
+
+int	check_args(int ac, char **av)
+{
+	int	i;
+	int	j;
+
+	i = 1;
+	j = 0;
+	if (ac != 5 && ac != 6)
+		print_usage();
+	while (av[i])
+	{
+		while (av[i][j])
+		{
+			if (!ft_is_digit(av[i][j]))
+			{
+				print_error_msg(ARGS_RE_NBR);
+			}
+			j++;
+		}
+		j = 0;
+		i++;
+	}
+	return (EXIT_SUCCESS);
+}
+
 void	init_info_with_args(t_information *info, int ac, char **av)
 {
 	info->creation_time = get_time_in_ms();
@@ -279,12 +333,16 @@ void	init_info_with_args(t_information *info, int ac, char **av)
 	info->die_time = ft_atoi(av[2]);
 	info->eat_time = ft_atoi(av[3]);
 	info->sleep_time = ft_atoi(av[4]);
-	if (info->nbr_philo <= 0)
+	if (info->nbr_philo <= 0 || info->nbr_philo > 200)
 		print_error_msg(ARGC_NBR_PHILO);
+	if (info->eat_time < 60)
+		print_error_msg(ARGC_EAT_TIME);
+	if (info->sleep_time < 60)
+		print_error_msg(ARGC_SLEEP_TIME);
 	if (ac == 6)
 	{
 		info->nbr_to_eat = ft_atoi(av[5]);
-		if (info->nbr_to_eat == 0)
+		if (info->nbr_to_eat <= 0 || info->nbr_to_eat > 2147483647)
 			print_error_msg(ARGC_TIMES_EAT);
 	}
 }
@@ -347,6 +405,8 @@ void	philo_eat_with_two_fork(t_philosophers *philo, t_information *info)
 
 void	philo_sleep_and_think(t_philosophers *philo, t_information *info)
 {
+	if (philo->is_dead)
+		return ;
 	philo_display(info, philo->id, COLOR_GREEN SLEEP NO_COLOR);
 	pause_time(info, (long long)info->sleep_time);
 	philo_display(info, philo->id, COLOR_BLUE THINK NO_COLOR);
@@ -371,6 +431,7 @@ void	check_dead_or_finish(t_philosophers *philo, t_information *info)
 			if ((current_time - philo[i].last_eat) >= info->die_time)
 			{
 				philo_display(info, i, COLOR_PURPLE DIE NO_COLOR);
+				philo[i].is_dead = 1;
 				info->finish = 1;
 				break ;
 			}
@@ -382,25 +443,26 @@ void	check_dead_or_finish(t_philosophers *philo, t_information *info)
 void	start_philo_threads(t_philosophers *philo, t_information *info)
 {
 	int			i;
-	//t_barrier	barrier;
+	t_barrier	barrier;
 
-	//barrier_init(&barrier, info->nbr_philo);
+	barrier_init(&barrier, info->nbr_philo);
 	i = 0;
 	while (i < info->nbr_philo)
 	{
+		philo[i].barrier = &barrier;
 		philo[i].last_eat = get_time_in_ms();
 		if (pthread_create(&(philo[i].thread),
 				NULL, philo_routine, &(philo[i])))
 			print_error_msg(ERROR_START_PHILO);
 		i++;
 	}
-	//barrier_wait(&barrier);
+	barrier_wait(&barrier);
 	check_dead_or_finish(philo, info);
 	i = 0;
 	while (i < info->nbr_philo)
 		pthread_join(philo[i++].thread, NULL);
 	free_all_thread(philo, info);
-	//barrier_destroy(&barrier);
+	barrier_destroy(&barrier);
 }
 
 void	free_all_thread(t_philosophers *philo, t_information *info)
@@ -419,18 +481,19 @@ void	*philo_routine(void *data)
 {
 	t_information	*info;
 	t_philosophers	*philo;
-	//t_barrier		barrier;
+	t_barrier		*barrier;
 
 	philo = data;
 	info = philo->info;
-/*
+	barrier = philo->barrier;
+
 	// Incrementa el contador de la barrera
-    pthread_mutex_lock(&barrier.mutex);
-    barrier.count++;
-    pthread_mutex_unlock(&barrier.mutex);
+    pthread_mutex_lock(&barrier->mutex);
+    barrier->count++;
+    pthread_mutex_unlock(&barrier->mutex);
 
     // Espera en la barrera
-    barrier_wait(&barrier);*/
+    barrier_wait(barrier);
 	if (philo->id % 2)
 		usleep(1000);
 	else

@@ -6,7 +6,7 @@
 /*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:46:57 by oseivane          #+#    #+#             */
-/*   Updated: 2024/03/06 23:44:45 by mac              ###   ########.fr       */
+/*   Updated: 2024/03/08 09:54:34 by mac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,29 +59,32 @@
 # define ERROR_MUTEX_FORK "pthread_mutex_init (info->fork) fail !"
 # define ERROR_MALLOC_PHILO "malloc philosophers fail !"
 # define ERROR_START_PHILO "pthread_create Philosophers fail !"
-# define ERROR_NEGATIVE_ARG "Negative number found in argument !"
+# define ERROR_NEGATIVE_ARG "Negative number found in argument ! "
 # define TAKE_FORK "has taken a fork"
 # define EAT "is eating"
 # define SLEEP "is sleeping"
 # define THINK "is thinking"
 # define DIE "died"
 
-/*typedef struct s_barrier
+typedef struct s_barrier
 {
 	pthread_mutex_t	mutex;
 	int				count;
 	int				n;
-}	t_barrier;*/
+}	t_barrier;
 
 typedef struct s_philosophers
 {
+	pthread_mutex_t			mutex;
 	int						id;
 	int						left;
 	int						right;
 	pthread_t				thread;
 	long long				last_eat;
+	int						is_dead;
 	int						eat_count;
 	struct s_information	*info;
+	t_barrier				*barrier;
 }	t_philosophers;	
 
 typedef struct s_information
@@ -98,16 +101,17 @@ typedef struct s_information
 	long long		creation_time;
 }	t_information;
 
-//Init the structures
+//Init the structures and checking arguments
+int			check_args(int ac, char **av);
 void		init_info_with_args(t_information *info, int ac, char **av);
 void		init_mutex_forks(t_information *info);
 void		init_philo_info(t_philosophers **philo, t_information *info);
-/*
+
 //Barrier
 void		barrier_init(t_barrier *barrier, int n);
 void		barrier_wait(t_barrier *barrier);
 void		barrier_destroy(t_barrier *barrier);
-*/
+
 //threads
 void		*philo_routine(void *data);
 void		start_philo_threads(t_philosophers *philo, t_information *info);
@@ -129,7 +133,7 @@ int			ft_is_digit(char c);
 int			ft_atoi(const char *str);
 int			ft_strcmp(char *s1, char *s2);
 long long	get_time_in_ms(void);
-//void		pause_time(t_information *info, long long wait_time);
-void		pause_time(long long milisecs);
+void		pause_time(t_information *info, long long wait_time);
+//void		pause_time(long long milisecs);
 
 #endif
