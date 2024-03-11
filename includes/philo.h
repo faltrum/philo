@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:46:57 by oseivane          #+#    #+#             */
-/*   Updated: 2024/03/08 09:54:34 by mac              ###   ########.fr       */
+/*   Updated: 2024/03/11 15:53:33 by oseivane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,6 @@ typedef struct s_philosophers
 	int						is_dead;
 	int						eat_count;
 	struct s_information	*info;
-	t_barrier				*barrier;
 }	t_philosophers;	
 
 typedef struct s_information
@@ -99,6 +98,7 @@ typedef struct s_information
 	int				nbr_to_eat;
 	int				finished_eat;
 	long long		creation_time;
+	t_barrier		barrier;
 }	t_information;
 
 //Init the structures and checking arguments
