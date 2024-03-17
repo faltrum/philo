@@ -6,11 +6,11 @@
 /*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:47:41 by oseivane          #+#    #+#             */
-/*   Updated: 2024/03/10 01:03:42 by mac              ###   ########.fr       */
+/*   Updated: 2024/03/17 00:59:33 by mac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "../includes/philo.h"
 
 int	ft_is_digit(char c)
 {
@@ -70,17 +70,19 @@ void	pause_time(long long milisecs)
 		usleep(milisecs * 5);
 }*/
 
-void	pause_time(t_information *info, long long wait_time)
+void	pause_time(long long wait_time)
 {
 	long long	now;
 	long long	start;
 
+
 	start = get_time_in_ms();
-	while (!(info->finish))
-	{
-		now = get_time_in_ms();
-		if ((now - start) >= wait_time)
-			break ;
-		usleep(100);
-	}
+	usleep(wait_time * 850);
+	//while (!(info->finish))
+	//{
+	now = get_time_in_ms();
+	if ((now - start) < wait_time)
+			//break ;
+		usleep(wait_time * 5);
+	//}
 }

@@ -1,8 +1,9 @@
+# include <limits.h>
+# include <pthread.h>
 # include <stdlib.h>
 # include <stdio.h>
 # include <string.h>
 # include <unistd.h>
-# include <pthread.h>
 # include <sys/time.h>
 
 //Definir colores
@@ -39,11 +40,14 @@
 # define ERROR_NBR_INF_0 "should be > 0 and <= 200"
 # define ERROR_NBR_INF_1 "should be > 0 and < 2147483648"
 # define ERROR_TIME "should be >= 60"
-# define ERROR_MUTEX_LOCK "pthread_mutex_init (info->lock) fail !"
+# define ERROR_MUTEX_DISPLAY "pthread_mutex_init (info->display) fail !"
+# define ERROR_MUTEX_BARRIER "pthread_mutex_init (info->barrier) fail !"
+# define ERROR_MUTEX_REST "pthread_mutex_init (info->rest) fail !"
 # define ERROR_MALLOC_FORK "malloc pthread_mutex_t *fork fail !"
 # define ERROR_MUTEX_FORK "pthread_mutex_init (info->fork) fail !"
 # define ERROR_MALLOC_PHILO "malloc philosophers fail !"
 # define ERROR_START_PHILO "pthread_create Philosophers fail !"
+# define ERROR_DETACH_PHILO "pthread_detach Philosophers fail !"
 # define ERROR_NEGATIVE_ARG "Negative number found in argument ! "
 # define TAKE_FORK "has taken a fork"
 # define EAT "is eating"
@@ -51,31 +55,25 @@
 # define THINK "is thinking"
 # define DIE "died"
 
-typedef struct s_barrier
-{
-	pthread_mutex_t	mutex;
-	int				count;
-	int				n;
-}	t_barrier;
-
 typedef struct s_philosophers
 {
+	pthread_t				thread;
 	int						id;
 	int						left;
 	int						right;
-	pthread_t				thread;
-	pthread_mutex_t			mutex;
 	long long				last_eat;
 	int						is_dead;
 	int						eat_count;
 	struct s_information	*info;
-	t_barrier				*barrier;
 }	t_philosophers;	
 
 typedef struct s_information
 {
-	pthread_mutex_t	lock;
+	pthread_mutex_t	barrier;
+	pthread_mutex_t	display;
 	pthread_mutex_t	*forks;
+	pthread_mutex_t	rest;
+	int				active_threads;
 	int				finish;
 	int				eat_time;
 	int				die_time;
@@ -86,23 +84,19 @@ typedef struct s_information
 	long long		creation_time;
 }	t_information;
 
-//Init the structures
+//Init the structures and checking arguments
+int			check_args(int ac, char **av);
 void		init_info_with_args(t_information *info, int ac, char **av);
-void		init_mutex_forks(t_information *info);
+void		init_mutexes(t_information *info);
 void		init_philo_info(t_philosophers **philo, t_information *info);
-/*
-//Barrier
-void		barrier_init(t_barrier *barrier, int n);
-void		barrier_wait(t_barrier *barrier);
-void		barrier_destroy(t_barrier *barrier);
-*/
+
 //threads
 void		*philo_routine(void *data);
 void		start_philo_threads(t_philosophers *philo, t_information *info);
 void		free_all_thread(t_philosophers *philo, t_information *info);
 void		check_dead_or_finish(t_philosophers *philo, t_information *info);
 
-//EST
+//eat, sleep and think
 
 void		philo_eat_with_two_fork(t_philosophers *philo, t_information *info);
 void		philo_sleep_and_think(t_philosophers *philo, t_information *info);
@@ -113,91 +107,17 @@ void		print_usage(void);
 void		philo_display(t_information *info, int id, char *msg);
 
 //utils.c
+int			ft_is_digit(char c);
 int			ft_atoi(const char *str);
 int			ft_strcmp(char *s1, char *s2);
 long long	get_time_in_ms(void);
-void		pause_time(t_information *info, long long wait_time);
+void		pause_time(long long wait_time);
 
-void	print_error_msg(char *msg)
+int	ft_is_digit(char c)
 {
-	printf("❌ %s ", ERROR_MSG);
-	if (!ft_strcmp(msg, ARGC_NBR_PHILO))
-	{
-		printf("%s", COLOR_LIGHT_GRAY);
-		printf("%s", ARGC_NBR_PHILO);
-		printf("%s", COLOR_RED);
-		printf(" %s\n", ERROR_NBR_INF_0);
-	}
-	else if (!ft_strcmp(msg, ARGC_TIMES_EAT))
-	{
-		printf("%s", COLOR_LIGHT_CYAN);
-		printf("%s", ARGC_TIMES_EAT);
-		printf("%s", COLOR_RED);
-		printf(" %s\n", ERROR_NBR_INF_1);
-	}
-	else if (!ft_strcmp(msg, ARGC_EAT_TIME))
-	{
-		printf("%s", COLOR_LIGHT_CYAN);
-		printf("%s", ARGC_EAT_TIME);
-		printf("%s", COLOR_RED);
-		printf(" %s\n", ERROR_TIME);
-	}
-	else if (!ft_strcmp(msg, ARGC_SLEEP_TIME))
-	{
-		printf("%s", COLOR_LIGHT_CYAN);
-		printf("%s", ARGC_SLEEP_TIME);
-		printf("%s", COLOR_RED);
-		printf(" %s\n", ERROR_TIME);
-	}
-	else
-	{
-		printf("%s", COLOR_RED);
-		printf("%s\n", msg);
-	}
-	exit(EXIT_FAILURE);
-}
-
-void	print_usage(void)
-{
-	printf("%s", USAGE);
-	printf("%s", COLOR_BLUE);
-	printf(" %s", PROGRAM_NAME);
-	printf("%s", NO_COLOR);
-	printf("%s", COLOR_LIGHT_CYAN);
-	printf(" %s", ARGC_NBR_PHILO);
-	printf("%s", NO_COLOR);
-	printf("%s", COLOR_PURPLE);
-	printf(" %s", ARGC_DIE_TIME);
-	printf("%s", NO_COLOR);
-	printf("%s", COLOR_YELLOW);
-	printf(" %s", ARGC_EAT_TIME);
-	printf("%s", NO_COLOR);
-	printf("%s", COLOR_GREEN);
-	printf(" %s", ARGC_SLEEP_TIME);
-	printf("%s", NO_COLOR);
-	printf("%s", COLOR_DARK_GRAY);
-	printf(" %s", ARGC_TIMES_EAT);
-	printf("%s", NO_COLOR);
-	exit(EXIT_FAILURE);
-}
-
-void	philo_display(t_information *info, int id, char *msg)
-{
-	long long	now;
-
-	now = get_time_in_ms();
-	pthread_mutex_lock(&(info->lock));
-	if (!(info->finish))
-	{
-		printf("%s", COLOR_ORANGE);
-		printf("%lld ", (now - info->creation_time));
-		printf("%s", NO_COLOR);
-		printf("%s", COLOR_LIGHT_CYAN);
-		printf("%d ", id + 1);
-		printf("%s", NO_COLOR);
-		printf("%s\n", msg);
-	}
-	pthread_mutex_unlock(&(info->lock));
+	if (c >= '0' && c <= '9')
+		return (1);
+	return (0);
 }
 
 int	ft_atoi(const char *str)
@@ -240,67 +160,36 @@ long long	get_time_in_ms(void)
 	gettimeofday(&current_time, NULL);
 	return ((current_time.tv_sec * 1000) + (current_time.tv_usec / 1000));
 }
+/*
+void	pause_time(long long milisecs)
+{
+	long long	start;
 
-void	pause_time(t_information *info, long long wait_time)
+	start = get_time_in_ms();
+	usleep(milisecs * 850);
+	while (get_time_in_ms() - start < milisecs)
+		usleep(milisecs * 5);
+}*/
+
+void	pause_time(long long wait_time)
 {
 	long long	now;
 	long long	start;
 
 	start = get_time_in_ms();
-	while (!(info->finish))
-	{
-		now = get_time_in_ms();
-		if ((now - start) >= wait_time)
-			break ;
-		usleep(100);
-	}
+	usleep(wait_time * 850);
+	//while (!(info->finish))
+	//{
+	now = get_time_in_ms();
+	if ((now - start) < wait_time)
+			//break ;
+		usleep(wait_time * 5);
+	//}
 }
 
-//Se incializa la barrera 
-void	barrier_init(t_barrier *barrier, int n)
-{
-	barrier->count = 0;
-	barrier->n = n;
-	pthread_mutex_init(&barrier->mutex, NULL);
-}
-
-void	barrier_wait(t_barrier *barrier)
-{
-	pthread_mutex_lock(&barrier->mutex);
-	barrier->count++;
-	if (barrier->count < barrier->n)
-	{
-		pthread_mutex_unlock(&barrier->mutex);
-		while (barrier->count <barrier->n);
-	}
-	else
-	{
-		barrier->count = 0;
-		pthread_mutex_unlock(&barrier->mutex);
-	}
-	
-	/*while (1)
-	{
-		pthread_mutex_lock(&barrier->mutex);
-		if (barrier->count >= barrier->n)
-		{
-			pthread_mutex_unlock(&barrier->mutex);
-			break ;
-		}
-		pthread_mutex_unlock(&barrier->mutex);
-		usleep(100);
-	}
-	while (barrier->count < barrier->n)
-		usleep(100);*/
-}
-
-//Funcion para liberar recursos de la barrera
-
-void	barrier_destroy(t_barrier *barrier)
-{
-	pthread_mutex_destroy(&barrier->mutex);
-}
-
+/*Funcion para comprobar que son digitos y que
+el numero de argumentos es el correcto, sino se
+imprime un mensaje de ayuda para orientar al usuario*/
 int	check_args(int ac, char **av)
 {
 	int	i;
@@ -325,7 +214,8 @@ int	check_args(int ac, char **av)
 	}
 	return (EXIT_SUCCESS);
 }
-
+/*Con los argmentos pasados se inicializan las variables de la
+estructura info, con control de errores como especifica el subject.*/
 void	init_info_with_args(t_information *info, int ac, char **av)
 {
 	info->creation_time = get_time_in_ms();
@@ -335,6 +225,8 @@ void	init_info_with_args(t_information *info, int ac, char **av)
 	info->sleep_time = ft_atoi(av[4]);
 	if (info->nbr_philo <= 0 || info->nbr_philo > 200)
 		print_error_msg(ARGC_NBR_PHILO);
+	if (info->die_time < 60)
+		print_error_msg(ARGC_DIE_TIME);
 	if (info->eat_time < 60)
 		print_error_msg(ARGC_EAT_TIME);
 	if (info->sleep_time < 60)
@@ -342,30 +234,12 @@ void	init_info_with_args(t_information *info, int ac, char **av)
 	if (ac == 6)
 	{
 		info->nbr_to_eat = ft_atoi(av[5]);
-		if (info->nbr_to_eat <= 0 || info->nbr_to_eat > 2147483647)
+		if (info->nbr_to_eat <= 0 || info->nbr_to_eat > INT_MAX)
 			print_error_msg(ARGC_TIMES_EAT);
 	}
 }
-
-void	init_mutex_forks(t_information *info)
-{
-	int	i;
-
-	i = 0;
-	if (pthread_mutex_init(&(info->lock), NULL))
-		print_error_msg(ERROR_MUTEX_LOCK);
-	info->forks = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t)
-			* info->nbr_philo);
-	if (!(info->forks))
-		print_error_msg(ERROR_MALLOC_FORK);
-	while (i < info->nbr_philo)
-	{
-		if (pthread_mutex_init(&(info->forks[i]), NULL))
-			print_error_msg(ERROR_MUTEX_FORK);
-		i++;
-	}
-}
-
+/*Se inicializa los valores de la estructura philo, primero reservando 
+memoria para toda la informacion*/
 void	init_philo_info(t_philosophers **philo, t_information *info)
 {
 	int	i;
@@ -382,36 +256,93 @@ void	init_philo_info(t_philosophers **philo, t_information *info)
 		(*philo)[i].eat_count = 0;
 		(*philo)[i].last_eat = get_time_in_ms();
 		(*philo)[i].right = ((i + 1) % info->nbr_philo);
+		(*philo)[i].is_dead = 0;	
+		i++;
+	}
+}
+/*Se inicializan los mutex de display y tenedores,
+este ultimo con reserva de memoria*/
+void	init_mutexes(t_information *info)
+{
+	int	i;
+
+	i = 0;
+	if (pthread_mutex_init(&(info->barrier), NULL))
+		print_error_msg(ERROR_MUTEX_BARRIER);
+	if (pthread_mutex_init(&(info->rest), NULL))
+		print_error_msg(ERROR_MUTEX_REST);
+	if (pthread_mutex_init(&(info->display), NULL))
+		print_error_msg(ERROR_MUTEX_DISPLAY);
+	info->forks = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t)
+			* info->nbr_philo);
+	if (!(info->forks))
+		print_error_msg(ERROR_MALLOC_FORK);
+	while (i < info->nbr_philo)
+	{
+		if (pthread_mutex_init(&(info->forks[i]), NULL))
+			print_error_msg(ERROR_MUTEX_FORK);
 		i++;
 	}
 }
 
-void	philo_eat_with_two_fork(t_philosophers *philo, t_information *info)
+void	free_all_thread(t_philosophers *philo, t_information *info);
+void	check_dead_or_finish(t_philosophers *philo, t_information *info);
+/*Comienzan los hilos de cada filosofo a crearse, controles de error,
+chequear si esta muerto o han acabado de comer, hacer joins otra vez y 
+destruir todos los hilos con sus liberaciones de memoria.*/
+void	start_philo_threads(t_philosophers *philo, t_information *info)
 {
-	pthread_mutex_lock(&(info->forks[philo->left]));
-	philo_display(info, philo->id, COLOR_RED TAKE_FORK NO_COLOR);
-	if (info->nbr_philo != 1)
+	int			i;
+
+	i = 0;
+	while (i < info->nbr_philo)
 	{
-		pthread_mutex_lock(&(info->forks[philo->right]));
-		philo_display(info, philo->id, COLOR_RED TAKE_FORK NO_COLOR);
-		philo_display(info, philo->id, COLOR_YELLOW EAT NO_COLOR);
-		philo->last_eat = get_time_in_ms();
-		philo->eat_count += 1;
-		pause_time(info, (long long)info->eat_time);
-		pthread_mutex_unlock(&(info->forks[philo->right]));
+		philo[i].last_eat = get_time_in_ms();
+		if (pthread_create(&(philo[i].thread),
+				NULL, philo_routine, &(philo[i])))
+			print_error_msg(ERROR_START_PHILO);
+		//if (pthread_detach(philo[i].thread) != 0)
+        //    print_error_msg(ERROR_DETACH_PHILO);
+		i++;
 	}
-	pthread_mutex_unlock(&(info->forks[philo->left]));
+	check_dead_or_finish(philo, info);
+	i = 0;
+	while (i < info->nbr_philo)
+		pthread_join(philo[i++].thread, NULL);
+	free_all_thread(philo, info);
 }
-
-void	philo_sleep_and_think(t_philosophers *philo, t_information *info)
+/*Funcion que representa la rutina de cada filosofo, es clave
+regular bien los tiempos (en ms)*/
+void	*philo_routine(void *data)
 {
-	if (philo->is_dead)
-		return ;
-	philo_display(info, philo->id, COLOR_GREEN SLEEP NO_COLOR);
-	pause_time(info, (long long)info->sleep_time);
-	philo_display(info, philo->id, COLOR_BLUE THINK NO_COLOR);
-}
+	t_information	*info;
+	t_philosophers	*philo;
 
+	philo = data;
+	info = philo->info;
+	pthread_mutex_lock(&(philo->info->barrier));
+	philo->info->active_threads++;
+	pthread_mutex_unlock(&(philo->info->barrier));
+	if (philo->id % 2 == 1)
+		pause_time((long long)philo->info->eat_time / 2);
+	while (philo->info->active_threads < philo->info->nbr_philo)
+	{
+		pause_time((long long)info->eat_time / 3);
+	}
+	while (!info->finish && !philo->is_dead)
+	{
+		philo_eat_with_two_fork(philo, info);
+		if (info->nbr_to_eat == philo->eat_count)
+		{
+			info->finished_eat++;
+			break ;
+		}
+		philo_sleep_and_think(philo, info);
+	}
+	return ((void *)0);
+}
+/*Funcion para chequear si esta muerto y para lo todo
+o si han acabado de comer la cantidad de veces indicada*/
 void	check_dead_or_finish(t_philosophers *philo, t_information *info)
 {
 	int			i;
@@ -421,6 +352,7 @@ void	check_dead_or_finish(t_philosophers *philo, t_information *info)
 	{
 		if ((info->nbr_to_eat != 0) && (info->nbr_philo == info->finished_eat))
 		{
+			write (1, "All philosophers have eaten enough\n", 36);
 			info->finish = 1;
 			break ;
 		}
@@ -433,36 +365,11 @@ void	check_dead_or_finish(t_philosophers *philo, t_information *info)
 				philo_display(info, i, COLOR_PURPLE DIE NO_COLOR);
 				philo[i].is_dead = 1;
 				info->finish = 1;
-				break ;
+				exit(1) ;
 			}
 			i++;
 		}
 	}
-}
-
-void	start_philo_threads(t_philosophers *philo, t_information *info)
-{
-	int			i;
-	t_barrier	barrier;
-
-	barrier_init(&barrier, info->nbr_philo);
-	i = 0;
-	while (i < info->nbr_philo)
-	{
-		philo[i].barrier = &barrier;
-		philo[i].last_eat = get_time_in_ms();
-		if (pthread_create(&(philo[i].thread),
-				NULL, philo_routine, &(philo[i])))
-			print_error_msg(ERROR_START_PHILO);
-		i++;
-	}
-	barrier_wait(&barrier);
-	check_dead_or_finish(philo, info);
-	i = 0;
-	while (i < info->nbr_philo)
-		pthread_join(philo[i++].thread, NULL);
-	free_all_thread(philo, info);
-	barrier_destroy(&barrier);
 }
 
 void	free_all_thread(t_philosophers *philo, t_information *info)
@@ -471,42 +378,161 @@ void	free_all_thread(t_philosophers *philo, t_information *info)
 
 	i = 0;
 	while (i < info->nbr_philo)
+	{
 		pthread_mutex_destroy(&(info->forks[i++]));
+	}
 	free(philo);
 	free(info->forks);
-	pthread_mutex_destroy(&(info->lock));
+	pthread_mutex_destroy(&(info->barrier));
+	pthread_mutex_destroy(&(info->display));
+	pthread_mutex_destroy(&(info->rest));
 }
 
-void	*philo_routine(void *data)
+#include "philo.h"
+/*Creacion de la funcion que imprime la informacion
+utiliza un mutex_lock/unlock para que no haya data race 
+en la impresion de la info*/
+void	philo_display(t_information *info, int id, char *msg)
 {
-	t_information	*info;
-	t_philosophers	*philo;
-	t_barrier		*barrier;
+	long long	now;
 
-	philo = data;
-	info = philo->info;
-	barrier = philo->barrier;
-
-	// Incrementa el contador de la barrera
-    pthread_mutex_lock(&barrier->mutex);
-    barrier->count++;
-    pthread_mutex_unlock(&barrier->mutex);
-
-    // Espera en la barrera
-    barrier_wait(barrier);
-	if (philo->id % 2)
-		usleep(1000);
-	else
-		usleep(333);
-	while (!info->finish)
+	pthread_mutex_lock(&(info->display));
+	now = get_time_in_ms();
+	if (!(info->finish))
 	{
-		philo_eat_with_two_fork(philo, info);
-		if (info->nbr_to_eat == philo->eat_count)
-		{
-			info->finished_eat++;
-			break ;
-		}
-		philo_sleep_and_think(philo, info);
+		printf("%s", COLOR_ORANGE);
+		printf("%lld ", (now - info->creation_time));
+		printf("%s", NO_COLOR);
+		printf("%s", COLOR_LIGHT_CYAN);
+		printf("%d ", id + 1);
+		printf("%s", NO_COLOR);
+		printf("%s\n", msg);
 	}
-	return ((void *)0);
+	pthread_mutex_unlock(&(info->display));
+}
+
+/*Funcion clave para gestionar "comer": se bloquea tenedor izquierdo,
+se imprime mensaje, se bloquea derecho, se imprimer mesaje, entonces
+se gestiona el tiempo de comida, se graba el tiempo de ultima comida,
+se hace un conteo de comidas y desbloquean los mutex.*/
+void	philo_eat_with_two_fork(t_philosophers *philo, t_information *info)
+{
+	//printf("%d : taken left fork\n", philo->id + 1);
+	pthread_mutex_lock(&(info->forks[philo->left]));
+	philo_display(info, philo->id, COLOR_RED TAKE_FORK NO_COLOR);
+	if (info->nbr_philo != 1)
+	{
+		pthread_mutex_lock(&(info->forks[philo->right]));
+		philo_display(info, philo->id, COLOR_RED TAKE_FORK NO_COLOR);
+		//printf("%d : taken right fork\n", philo->id + 1);
+		philo_display(info, philo->id, COLOR_YELLOW EAT NO_COLOR);
+		pause_time((long long)info->eat_time);
+		philo->last_eat = get_time_in_ms();
+		philo->eat_count += 1;
+		pthread_mutex_unlock(&(info->forks[philo->right]));
+		//printf("%d : leaven right fork\n", philo->id + 1);
+	}
+	pthread_mutex_unlock(&(info->forks[philo->left]));
+	//printf("%d : leaven left fork\n", philo->id + 1);
+}
+
+/*Funcion que regula dormir y despues pensar, comprueba si
+hay alguien muerto para parar el proceso*/
+void	philo_sleep_and_think(t_philosophers *philo, t_information *info)
+{
+	pthread_mutex_lock(&(info->rest));
+	//printf("%d : Go to bed\n", philo->id + 1);
+	philo_display(info, philo->id, COLOR_GREEN SLEEP NO_COLOR);
+	pause_time((long long)info->sleep_time + 1);
+	//printf("%d : Wake up!!\n", philo->id + 1);
+	//printf("%d : Pre thinking\n", philo->id + 1);
+	philo_display(info, philo->id, COLOR_BLUE THINK NO_COLOR);
+	//printf("%d : Post thinking\n", philo->id + 1);
+	pthread_mutex_unlock(&(info->rest));
+}
+
+/*Imprimir mensajes de error utilizan el strcmp, versatil 
+y rapido de configurar*/
+void	print_error_msg(char *msg)
+{
+	printf("❌ %s ", ERROR_MSG);
+	if (!ft_strcmp(msg, ARGC_NBR_PHILO))
+	{
+		printf("%s", COLOR_LIGHT_GRAY);
+		printf("%s", ARGC_NBR_PHILO);
+		printf("%s", COLOR_RED);
+		printf(" %s\n", ERROR_NBR_INF_0);
+	}
+	else if (!ft_strcmp(msg, ARGC_DIE_TIME))
+	{
+		printf("%s", COLOR_PURPLE);
+		printf("%s", ARGC_DIE_TIME);
+		printf("%s", COLOR_RED);
+		printf(" %s\n", ERROR_TIME);
+	}
+	else if (!ft_strcmp(msg, ARGC_EAT_TIME))
+	{
+		printf("%s", COLOR_YELLOW);
+		printf("%s", ARGC_EAT_TIME);
+		printf("%s", COLOR_RED);
+		printf(" %s\n", ERROR_TIME);
+	}
+	else if (!ft_strcmp(msg, ARGC_SLEEP_TIME))
+	{
+		printf("%s", COLOR_GREEN);
+		printf("%s", ARGC_SLEEP_TIME);
+		printf("%s", COLOR_RED);
+		printf(" %s\n", ERROR_TIME);
+	}
+	else if (!ft_strcmp(msg, ARGC_TIMES_EAT))
+	{
+		printf("%s", COLOR_DARK_GRAY);
+		printf("%s", ARGC_TIMES_EAT);
+		printf("%s", COLOR_RED);
+		printf(" %s\n", ERROR_NBR_INF_1);
+	}
+	else
+	{
+		printf("%s", COLOR_RED);
+		printf("%s\n", msg);
+	}
+	exit(EXIT_FAILURE);
+}
+/*Imprimer la informacion de ayuda al usuario*/
+void	print_usage(void)
+{
+	printf("%s", USAGE);
+	printf("%s", COLOR_BLUE);
+	printf(" %s", PROGRAM_NAME);
+	printf("%s", NO_COLOR);
+	printf("%s", COLOR_LIGHT_CYAN);
+	printf(" %s", ARGC_NBR_PHILO);
+	printf("%s", NO_COLOR);
+	printf("%s", COLOR_PURPLE);
+	printf(" %s", ARGC_DIE_TIME);
+	printf("%s", NO_COLOR);
+	printf("%s", COLOR_YELLOW);
+	printf(" %s", ARGC_EAT_TIME);
+	printf("%s", NO_COLOR);
+	printf("%s", COLOR_GREEN);
+	printf(" %s", ARGC_SLEEP_TIME);
+	printf("%s", NO_COLOR);
+	printf("%s", COLOR_DARK_GRAY);
+	printf(" %s", ARGC_TIMES_EAT);
+	printf("%s", NO_COLOR);
+	exit(EXIT_FAILURE);
+}
+
+int	main(int ac, char **av)
+{
+	t_information	info;
+	t_philosophers	*philo;
+	
+	memset(&info, 0, sizeof(t_information));
+	init_info_with_args(&info, ac, av);
+	check_args(ac, av);
+	init_philo_info(&philo, &info);
+	init_mutexes(&info);
+	start_philo_threads(philo, &info);
+	return (EXIT_SUCCESS);
 }

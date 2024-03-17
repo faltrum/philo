@@ -3,20 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   philoest.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:47:25 by oseivane          #+#    #+#             */
-/*   Updated: 2024/03/11 15:31:20 by oseivane         ###   ########.fr       */
+/*   Updated: 2024/03/17 00:23:45 by mac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
-
+#include "../includes/philo.h"
+/*Creacion de la funcion que imprime la informacion
+utiliza un mutex_lock/unlock para que no haya data race 
+en la impresion de la info*/
 void	philo_display(t_information *info, int id, char *msg)
 {
 	long long	now;
 
-	pthread_mutex_lock(&(info->lock));
+	pthread_mutex_lock(&(info->display));
 	now = get_time_in_ms();
 	if (!(info->finish))
 	{
@@ -28,50 +30,44 @@ void	philo_display(t_information *info, int id, char *msg)
 		printf("%s", NO_COLOR);
 		printf("%s\n", msg);
 	}
-	pthread_mutex_unlock(&(info->lock));
+	pthread_mutex_unlock(&(info->display));
 }
 
+/*Funcion clave para gestionar "comer": se bloquea tenedor izquierdo,
+se imprime mensaje, se bloquea derecho, se imprimer mesaje, entonces
+se gestiona el tiempo de comida, se graba el tiempo de ultima comida,
+se hace un conteo de comidas y desbloquean los mutex.*/
 void	philo_eat_with_two_fork(t_philosophers *philo, t_information *info)
 {
-	//int		first_fork = philo->left < philo->right ? philo->left : philo->right;
-	//int		second_fork = philo->left < philo->right ? philo->right : philo->left;
+	//int			i = 0;
 	
-	//pthread_mutex_lock(&(info->forks[first_fork]));
 	pthread_mutex_lock(&(info->forks[philo->left]));
 	philo_display(info, philo->id, COLOR_RED TAKE_FORK NO_COLOR);
-	printf("%d : taken left fork\n", philo->id + 1);
-	if (info->nbr_philo != 1)
+	/*if (info->nbr_philo == 1)
 	{
-		//pthread_mutex_lock(&(info->forks[second_fork]));
-		pthread_mutex_lock(&(info->forks[philo->right]));
-		philo_display(info, philo->id, COLOR_RED TAKE_FORK NO_COLOR);
-		printf("%d : taken right fork\n", philo->id + 1);
-		philo_display(info, philo->id, COLOR_YELLOW EAT NO_COLOR);
-		pause_time(info, (long long)info->eat_time);
-		philo->last_eat = get_time_in_ms();
-		philo->eat_count += 1;
-		//pause_time((long long)info->eat_time);
-		//pthread_mutex_lock(&(info->forks[second_fork]));
-		pthread_mutex_unlock(&(info->forks[philo->right]));
-		printf("%d : leaven right fork\n", philo->id + 1);
-	}
-	//pthread_mutex_lock(&(info->forks[first_fork]));
+		philo_display(info, i, COLOR_PURPLE DIE NO_COLOR);
+		info->is_dead = 1;
+		info->finish = 1;
+		info->finished_philo++;
+		exit(1) ;
+	}*/
+	pthread_mutex_lock(&(info->forks[philo->right]));
+	philo_display(info, philo->id, COLOR_RED TAKE_FORK NO_COLOR);
+	philo_display(info, philo->id, COLOR_YELLOW EAT NO_COLOR);
+	pause_time((long long)info->eat_time);
+	philo->last_meal = get_time_in_ms();
+	philo->meal_count += 1;
+	pthread_mutex_unlock(&(info->forks[philo->right]));
 	pthread_mutex_unlock(&(info->forks[philo->left]));
-	printf("%d : leaven left fork\n", philo->id + 1);
 }
 
-
+/*Funcion que regula dormir y despues pensar, comprueba si
+hay alguien muerto para parar el proceso*/
 void	philo_sleep_and_think(t_philosophers *philo, t_information *info)
 {
-	if (philo->is_dead)
-		exit(1) ;
-	printf("%d : Go to bed\n", philo->id + 1);
+	pthread_mutex_lock(&(info->rest));
 	philo_display(info, philo->id, COLOR_GREEN SLEEP NO_COLOR);
-	//pause_time((long long)info->sleep_time);
-	pause_time(info, (long long)info->sleep_time + 1);
-	printf("%d : Wake up!!\n", philo->id + 1);
-	printf("%d : Pre thinking\n", philo->id + 1);
+	pause_time((long long)info->sleep_time + 1);
 	philo_display(info, philo->id, COLOR_BLUE THINK NO_COLOR);
-	printf("%d : Post thinking\n", philo->id + 1);
-	//pause_time(info, (long long)info->sleep_time / 2);
+	pthread_mutex_unlock(&(info->rest));
 }
