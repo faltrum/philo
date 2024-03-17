@@ -3,21 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:46:57 by oseivane          #+#    #+#             */
-/*   Updated: 2024/03/11 15:53:33 by oseivane         ###   ########.fr       */
+/*   Updated: 2024/03/17 01:06:01 by mac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILO_H
 # define PHILO_H
 
+# include <limits.h>
+# include <pthread.h>
 # include <stdlib.h>
 # include <stdio.h>
 # include <string.h>
 # include <unistd.h>
-# include <pthread.h>
 # include <sys/time.h>
 
 //Definir colores
@@ -54,11 +55,15 @@
 # define ERROR_NBR_INF_0 "should be > 0 and <= 200"
 # define ERROR_NBR_INF_1 "should be > 0 and < 2147483648"
 # define ERROR_TIME "should be >= 60"
-# define ERROR_MUTEX_LOCK "pthread_mutex_init (info->lock) fail !"
+# define ERROR_MUTEX_DISPLAY "pthread_mutex_init (info->display) fail !"
+# define ERROR_MUTEX_BARRIER "pthread_mutex_init (info->barrier) fail !"
+# define ERROR_MUTEX_REST "pthread_mutex_init (info->rest) fail !"
 # define ERROR_MALLOC_FORK "malloc pthread_mutex_t *fork fail !"
 # define ERROR_MUTEX_FORK "pthread_mutex_init (info->fork) fail !"
 # define ERROR_MALLOC_PHILO "malloc philosophers fail !"
 # define ERROR_START_PHILO "pthread_create Philosophers fail !"
+# define ERROR_START_CHECK "pthread_create checker fail !"
+# define ERROR_DETACH_PHILO "pthread_detach Philosophers fail !"
 # define ERROR_NEGATIVE_ARG "Negative number found in argument ! "
 # define TAKE_FORK "has taken a fork"
 # define EAT "is eating"
@@ -66,62 +71,55 @@
 # define THINK "is thinking"
 # define DIE "died"
 
-typedef struct s_barrier
-{
-	pthread_mutex_t	mutex;
-	int				count;
-	int				n;
-}	t_barrier;
-
 typedef struct s_philosophers
 {
-	pthread_mutex_t			mutex;
 	int						id;
+	int						is_dead;
 	int						left;
 	int						right;
+	int						meal_count;
+	long long				last_meal;
 	pthread_t				thread;
-	long long				last_eat;
-	int						is_dead;
-	int						eat_count;
 	struct s_information	*info;
 }	t_philosophers;	
 
 typedef struct s_information
 {
-	pthread_mutex_t	lock;
-	pthread_mutex_t	*forks;
-	int				finish;
-	int				eat_time;
+	int				active_threads;
 	int				die_time;
-	int				nbr_philo;
-	int				sleep_time;
-	int				nbr_to_eat;
+	int				eat_time;
+	int				finish;
 	int				finished_eat;
+	int				finished_philo;
+	int				nbr_philo;
+	int				nbr_to_eat;
+	int				sleep_time;
 	long long		creation_time;
-	t_barrier		barrier;
+	pthread_t		check_death;
+	pthread_t		*philos_th;
+	pthread_mutex_t	barrier;
+	pthread_mutex_t	display;
+	pthread_mutex_t	*forks;
+	pthread_mutex_t	rest;
 }	t_information;
 
 //Init the structures and checking arguments
-int			check_args(int ac, char **av);
+int			check_args(char **av);
 void		init_info_with_args(t_information *info, int ac, char **av);
-void		init_mutex_forks(t_information *info);
-void		init_philo_info(t_philosophers **philo, t_information *info);
-
-//Barrier
-void		barrier_init(t_barrier *barrier, int n);
-void		barrier_wait(t_barrier *barrier);
-void		barrier_destroy(t_barrier *barrier);
+void		init_mutexes(t_information *info);
+int			init_philo_info(t_philosophers **philo, t_information *info);
+int			init_philo_threads(t_philosophers *philo, t_information *info);
 
 //threads
 void		*philo_routine(void *data);
-void		start_philo_threads(t_philosophers *philo, t_information *info);
 void		free_all_thread(t_philosophers *philo, t_information *info);
-void		check_dead_or_finish(t_philosophers *philo, t_information *info);
+void		*check_dead_or_finish(void *data);
 
-//EST
+//eat, sleep and think
 
 void		philo_eat_with_two_fork(t_philosophers *philo, t_information *info);
 void		philo_sleep_and_think(t_philosophers *philo, t_information *info);
+void		exec_death(t_information *info, t_philosophers *philo, int i);
 
 //printing.c
 void		print_error_msg(char *msg);
@@ -133,7 +131,6 @@ int			ft_is_digit(char c);
 int			ft_atoi(const char *str);
 int			ft_strcmp(char *s1, char *s2);
 long long	get_time_in_ms(void);
-void		pause_time(t_information *info, long long wait_time);
-//void		pause_time(long long milisecs);
+void		pause_time(long long wait_time);
 
 #endif

@@ -6,12 +6,13 @@
 /*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:47:30 by oseivane          #+#    #+#             */
-/*   Updated: 2024/03/10 19:11:27 by mac              ###   ########.fr       */
+/*   Updated: 2024/03/17 00:23:50 by mac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
-
+#include "../includes/philo.h"
+/*Imprimir mensajes de error utilizan el strcmp, versatil 
+y rapido de configurar*/
 void	print_error_msg(char *msg)
 {
 	printf("❌ %s ", ERROR_MSG);
@@ -57,7 +58,7 @@ void	print_error_msg(char *msg)
 	}
 	exit(EXIT_FAILURE);
 }
-
+/*Imprimer la informacion de ayuda al usuario*/
 void	print_usage(void)
 {
 	printf("%s", USAGE);

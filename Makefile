@@ -25,6 +25,7 @@ INCLUDES_DIR = ./includes/*.h
 INCLUDES = -I./includes
 
 CFLAGS = -Werror -Wall -Wextra
+OFLAGS = -g -fsanitize = address
 
 OBJF = .cache_exists
 
@@ -33,8 +34,7 @@ SRC = 	main \
 		utils \
 		init_check \
 		threads \
-		philoest \
-		barrier
+		philoest
 
 SOURCES = $(addprefix $(SRC_DIR), $(addsuffix .c, $(SRC)))
 
