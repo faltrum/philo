@@ -6,7 +6,7 @@
 /*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:47:41 by oseivane          #+#    #+#             */
-/*   Updated: 2024/03/17 00:59:33 by mac              ###   ########.fr       */
+/*   Updated: 2024/04/07 23:10:23 by mac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,37 +52,20 @@ int	ft_strcmp(char *s1, char *s2)
 	return (s1[i] - s2[i]);
 }
 
-long long	get_time_in_ms(void)
+long	get_time_in_ms(void)
 {
 	struct timeval	current_time;
 
 	gettimeofday(&current_time, NULL);
 	return ((current_time.tv_sec * 1000) + (current_time.tv_usec / 1000));
 }
-/*
-void	pause_time(long long milisecs)
+
+void	pause_time(long wait_time)
 {
-	long long	start;
-
-	start = get_time_in_ms();
-	usleep(milisecs * 850);
-	while (get_time_in_ms() - start < milisecs)
-		usleep(milisecs * 5);
-}*/
-
-void	pause_time(long long wait_time)
-{
-	long long	now;
-	long long	start;
-
+	long	start;
 
 	start = get_time_in_ms();
 	usleep(wait_time * 850);
-	//while (!(info->finish))
-	//{
-	now = get_time_in_ms();
-	if ((now - start) < wait_time)
-			//break ;
+	while (get_time_in_ms() - start < wait_time)
 		usleep(wait_time * 5);
-	//}
 }

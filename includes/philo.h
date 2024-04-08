@@ -6,7 +6,7 @@
 /*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:46:57 by oseivane          #+#    #+#             */
-/*   Updated: 2024/03/17 01:06:01 by mac              ###   ########.fr       */
+/*   Updated: 2024/04/07 23:37:27 by mac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,9 @@
 # define ERROR_MUTEX_DISPLAY "pthread_mutex_init (info->display) fail !"
 # define ERROR_MUTEX_BARRIER "pthread_mutex_init (info->barrier) fail !"
 # define ERROR_MUTEX_REST "pthread_mutex_init (info->rest) fail !"
-# define ERROR_MALLOC_FORK "malloc pthread_mutex_t *fork fail !"
-# define ERROR_MUTEX_FORK "pthread_mutex_init (info->fork) fail !"
+# define ERROR_MUTEX_MEALS "pthread_mutex_init (info->meals) fail !"
+# define ERROR_MALLOC_MUTEX "malloc pthread_mutex_t fail !"
+# define ERROR_MUTEX "pthread_mutex_init fail !"
 # define ERROR_MALLOC_PHILO "malloc philosophers fail !"
 # define ERROR_START_PHILO "pthread_create Philosophers fail !"
 # define ERROR_START_CHECK "pthread_create checker fail !"
@@ -74,63 +75,61 @@
 typedef struct s_philosophers
 {
 	int						id;
-	int						is_dead;
-	int						left;
-	int						right;
-	int						meal_count;
+	int						meals;
 	long long				last_meal;
-	pthread_t				thread;
+	pthread_mutex_t			*left;
+	pthread_mutex_t			*right;
 	struct s_information	*info;
 }	t_philosophers;	
 
 typedef struct s_information
 {
-	int				active_threads;
+	int				nbr_philo;
 	int				die_time;
 	int				eat_time;
-	int				finish;
-	int				finished_eat;
-	int				finished_philo;
-	int				nbr_philo;
-	int				nbr_to_eat;
 	int				sleep_time;
+	int				max_meals;
+	int				total_meals;
 	long long		creation_time;
-	pthread_t		check_death;
+	int				is_dead;
+	int				active_threads;
 	pthread_t		*philos_th;
-	pthread_mutex_t	barrier;
-	pthread_mutex_t	display;
+	pthread_t		check_death;
 	pthread_mutex_t	*forks;
-	pthread_mutex_t	rest;
+	pthread_mutex_t	display;
+	pthread_mutex_t	barrier;
+	pthread_mutex_t	meals_mtx;
+	struct s_philosophers		*philos_array;
 }	t_information;
 
 //Init the structures and checking arguments
 int			check_args(char **av);
 void		init_info_with_args(t_information *info, int ac, char **av);
-void		init_mutexes(t_information *info);
-int			init_philo_info(t_philosophers **philo, t_information *info);
-int			init_philo_threads(t_philosophers *philo, t_information *info);
+int			init_mutexes(t_information *info);
+int			init_philo_info(t_information *info);
+int			init_philo_threads(t_information *info);
 
 //threads
 void		*philo_routine(void *data);
-void		free_all_thread(t_philosophers *philo, t_information *info);
+void		free_all_thread(t_information *info);
+void		destroy_mutexes(t_information *info);
 void		*check_dead_or_finish(void *data);
 
 //eat, sleep and think
 
-void		philo_eat_with_two_fork(t_philosophers *philo, t_information *info);
-void		philo_sleep_and_think(t_philosophers *philo, t_information *info);
-void		exec_death(t_information *info, t_philosophers *philo, int i);
+void		philo_eat_with_two_fork(t_philosophers *philo);
+void		exec_death(t_information *info, int i);
 
 //printing.c
 void		print_error_msg(char *msg);
 void		print_usage(void);
-void		philo_display(t_information *info, int id, char *msg);
+void		philo_display(t_philosophers *philo, int id, char *msg);
 
 //utils.c
 int			ft_is_digit(char c);
 int			ft_atoi(const char *str);
 int			ft_strcmp(char *s1, char *s2);
-long long	get_time_in_ms(void);
-void		pause_time(long long wait_time);
+long		get_time_in_ms(void);
+void		pause_time(long wait_time);
 
 #endif
