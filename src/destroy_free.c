@@ -1,5 +1,16 @@
-#include "../includes/philo.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   destroy_free.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/11 10:26:31 by oseivane          #+#    #+#             */
+/*   Updated: 2024/04/11 10:27:52 by oseivane         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
+#include "../includes/philo.h"
 
 void	free_all_thread(t_information *info)
 {
@@ -7,7 +18,7 @@ void	free_all_thread(t_information *info)
 		free(info->philos_array);
 	if (info->philos_th)
 		free(info->philos_th);
-	if (info->forks)	
+	if (info->forks)
 		free(info->forks);
 }
 

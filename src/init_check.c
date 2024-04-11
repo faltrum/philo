@@ -1,53 +1,26 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   init_check.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/11 10:26:13 by oseivane          #+#    #+#             */
+/*   Updated: 2024/04/11 12:13:05 by oseivane         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/philo.h"
 
-/*Funcion para comprobar que son digitos y que
-el numero de argumentos es el correcto, sino se
-imprime un mensaje de ayuda para orientar al usuario*/
-int	check_args(char **av)
-{
-	int	i;
-	int	j;
-
-	i = 1;
-	j = 0;
-	
-	while (av[i])
-	{
-		while (av[i][j])
-		{
-			if (!ft_is_digit(av[i][j]))
-			{
-				print_error_msg(ARGS_RE_NBR);
-			}
-			j++;
-		}
-		j = 0;
-		i++;
-	}
-	return (0);
-}
 /*Con los argumentos pasados se inicializan las variables de la
 estructura info, con control de errores como especifica el subject.*/
-void	init_info_with_args(t_information *info, int ac, char **av)
+void	init_info(t_information *info, char **av)
 {
-	if ((ac != 5 && ac != 6) || ac == 1)
-		print_usage();
 	info->nbr_philo = ft_atoi(av[1]);
-	if (info->nbr_philo <= 0 || info->nbr_philo > 200)
-		print_error_msg(ARGC_NBR_PHILO);
-	if ((info->die_time = ft_atoi(av[2])) < 60)
-		print_error_msg(ARGC_DIE_TIME);
-	if ((info->eat_time = ft_atoi(av[3])) < 60)
-		print_error_msg(ARGC_EAT_TIME);
-	if ((info->sleep_time = ft_atoi(av[4])) < 60)
-		print_error_msg(ARGC_SLEEP_TIME);
-	if (ac == 6)
-	{
-		if ((info->max_meals = ft_atoi(av[5])) <= 0 || (info->max_meals = ft_atoi(av[5])) > INT_MAX)
-			print_error_msg(ARGC_TIMES_EAT);
-	}
-	else
-		info->max_meals = INT_MAX;
+	info->die_time = ft_atoi(av[2]);
+	info->eat_time = ft_atoi(av[3]);
+	info->sleep_time = ft_atoi(av[4]);
+	info->max_meals = ft_atoi(av[5]);
 	info->forks = NULL;
 	info->philos_array = NULL;
 	info->philos_th = NULL;
@@ -56,11 +29,35 @@ void	init_info_with_args(t_information *info, int ac, char **av)
 	info->active_threads = 0;
 	info->creation_time = 0;
 }
+
+void	init_info_with_args(t_information *info, int ac, char **av)
+{
+	init_info(info, av);
+	if ((ac != 5 && ac != 6) || ac == 1)
+		print_usage();
+	if (info->nbr_philo <= 0 || info->nbr_philo > 200)
+		print_error_msg(ARGC_NBR_PHILO);
+	if ((info->die_time) < 60)
+		print_error_msg(ARGC_DIE_TIME);
+	if ((info->eat_time) < 60)
+		print_error_msg(ARGC_EAT_TIME);
+	if ((info->sleep_time) < 60)
+		print_error_msg(ARGC_SLEEP_TIME);
+	if (ac == 6)
+	{
+		if ((info->max_meals)
+			<= 0 || (info->max_meals) > INT_MAX)
+			print_error_msg(ARGC_TIMES_EAT);
+	}
+	else
+		info->max_meals = INT_MAX;
+}
+
 /*Se inicializan los mutex de display, barrera, descanso y tenedores,
 este ultimo con reserva de memoria*/
 int	init_mutexes(t_information *info)
 {
-	int	i;
+	int				i;
 	pthread_mutex_t	*mutex;
 
 	i = 0;
@@ -88,7 +85,7 @@ int	init_mutexes(t_information *info)
 memoria para toda la informacion*/
 int	init_philo_info(t_information *info)
 {
-	int	i;
+	int				i;
 	t_philosophers	*philo;
 
 	philo = (t_philosophers *)malloc(sizeof(t_philosophers) * info->nbr_philo);
@@ -100,7 +97,7 @@ int	init_philo_info(t_information *info)
 		philo[i].id = i;
 		philo[i].meals = 0;
 		philo[i].info = info;
-		philo[i].right = &info->forks[i];	
+		philo[i].right = &info->forks[i];
 		philo[i].left = &info->forks[i + 1];
 		i++;
 	}
@@ -126,24 +123,14 @@ int	init_philo_threads(t_information *info)
 	{
 		if (pthread_create(&philo[i],
 				NULL, &philo_routine, (void *)&info->philos_array[i]) != 0)
-		{
 			print_error_msg(ERROR_START_PHILO);
-			exit(EXIT_FAILURE);
-		}
 		if (pthread_detach(philo[i]) != 0)
-        	print_error_msg(ERROR_DETACH_PHILO);
+			print_error_msg(ERROR_DETACH_PHILO);
 		i++;
 	}
-	if (pthread_create(&info->check_death, NULL, &check_dead_or_finish, (void *)info) != 0)
-	{
-		info->creation_time = 1;
-		info->is_dead = 1;
-		pause_time(1);
-		print_error_msg(ERROR_START_CHECK);
-		destroy_mutexes(info);
-		free_all_thread(info);
-		return (1);
-	}
+	if (pthread_create(&info->check_death, NULL,
+			&check_dead_or_finish, (void *)info) != 0)
+		print_error_msg3(info);
 	pthread_join(info->check_death, NULL);
 	return (0);
 }

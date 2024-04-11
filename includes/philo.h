@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:46:57 by oseivane          #+#    #+#             */
-/*   Updated: 2024/04/07 23:37:27 by mac              ###   ########.fr       */
+/*   Updated: 2024/04/11 12:06:25 by oseivane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,26 +84,27 @@ typedef struct s_philosophers
 
 typedef struct s_information
 {
-	int				nbr_philo;
-	int				die_time;
-	int				eat_time;
-	int				sleep_time;
-	int				max_meals;
-	int				total_meals;
-	long long		creation_time;
-	int				is_dead;
-	int				active_threads;
-	pthread_t		*philos_th;
-	pthread_t		check_death;
-	pthread_mutex_t	*forks;
-	pthread_mutex_t	display;
-	pthread_mutex_t	barrier;
-	pthread_mutex_t	meals_mtx;
+	int							nbr_philo;
+	int							die_time;
+	int							eat_time;
+	int							sleep_time;
+	int							max_meals;
+	int							total_meals;
+	long long					creation_time;
+	int							is_dead;
+	int							active_threads;
+	pthread_t					*philos_th;
+	pthread_t					check_death;
+	pthread_mutex_t				*forks;
+	pthread_mutex_t				display;
+	pthread_mutex_t				barrier;
+	pthread_mutex_t				meals_mtx;
 	struct s_philosophers		*philos_array;
 }	t_information;
 
 //Init the structures and checking arguments
 int			check_args(char **av);
+//void		init_info(t_information *info, char **av);
 void		init_info_with_args(t_information *info, int ac, char **av);
 int			init_mutexes(t_information *info);
 int			init_philo_info(t_information *info);
@@ -113,6 +114,7 @@ int			init_philo_threads(t_information *info);
 void		*philo_routine(void *data);
 void		free_all_thread(t_information *info);
 void		destroy_mutexes(t_information *info);
+void		*checking(t_information *info);
 void		*check_dead_or_finish(void *data);
 
 //eat, sleep and think
@@ -122,6 +124,8 @@ void		exec_death(t_information *info, int i);
 
 //printing.c
 void		print_error_msg(char *msg);
+void		print_error_msg2(char *msg);
+int			print_error_msg3(t_information *info);
 void		print_usage(void);
 void		philo_display(t_philosophers *philo, int id, char *msg);
 

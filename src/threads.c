@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   threads.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/11 10:25:28 by oseivane          #+#    #+#             */
+/*   Updated: 2024/04/11 11:51:45 by oseivane         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/philo.h"
 
 void	*check_dead_or_finish(void *data);
@@ -32,18 +44,12 @@ void	*philo_routine(void *data)
 	}
 	return (NULL);
 }
-/*Funcion para chequear si esta muerto y para lo todo
-o si han acabado de comer la cantidad de veces indicada*/
-void	*check_dead_or_finish(void *data)
-{
-	t_information	*info;
-	int				i;
 
-	info = (t_information *)data;
-	while (info->active_threads != info->nbr_philo)
-		pause_time(1);
-	info->creation_time = get_time_in_ms();
-	pause_time(info->eat_time / 2);
+void	*checking(t_information *info)
+{
+	int	i;
+
+	i = 0;
 	while (info->is_dead == 0)
 	{
 		i = 0;
@@ -51,8 +57,9 @@ void	*check_dead_or_finish(void *data)
 		{
 			if (info->total_meals == (info->nbr_philo * info->max_meals))
 				return (NULL);
-			if (((get_time_in_ms() - info->philos_array[i].last_meal) > info->die_time)
-					&& (info->philos_array[i].meals != info->max_meals))
+			if (((get_time_in_ms() - info->philos_array[i].last_meal)
+					> info->die_time)
+				&& (info->philos_array[i].meals != info->max_meals))
 			{
 				exec_death(info, i);
 				break ;
@@ -61,8 +68,23 @@ void	*check_dead_or_finish(void *data)
 		}
 	}
 	return (NULL);
-}	
-	
+}
+
+/*Funcion para chequear si esta muerto y para lo todo
+o si han acabado de comer la cantidad de veces indicada*/
+void	*check_dead_or_finish(void *data)
+{
+	t_information	*info;
+
+	info = (t_information *)data;
+	while (info->active_threads != info->nbr_philo)
+		pause_time(1);
+	info->creation_time = get_time_in_ms();
+	pause_time(info->eat_time / 2);
+	checking(info);
+	return (NULL);
+}
+
 void	exec_death(t_information *info, int i)
 {
 	info->is_dead = 1;

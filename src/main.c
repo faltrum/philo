@@ -3,19 +3,45 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:47:20 by oseivane          #+#    #+#             */
-/*   Updated: 2024/04/07 23:38:51 by mac              ###   ########.fr       */
+/*   Updated: 2024/04/11 12:13:48 by oseivane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
+/*Funcion para comprobar que son digitos y que
+el numero de argumentos es el correcto, sino se
+imprime un mensaje de ayuda para orientar al usuario*/
+int	check_args(char **av)
+{
+	int	i;
+	int	j;
+
+	i = 1;
+	j = 0;
+	while (av[i])
+	{
+		while (av[i][j])
+		{
+			if (!ft_is_digit(av[i][j]))
+			{
+				print_error_msg(ARGS_RE_NBR);
+			}
+			j++;
+		}
+		j = 0;
+		i++;
+	}
+	return (0);
+}
+
 int	main(int ac, char **av)
 {
 	t_information	info;
-	
+
 	memset(&info, 0, sizeof(t_information));
 	if (check_args(av))
 		return (EXIT_FAILURE);
