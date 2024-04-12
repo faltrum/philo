@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:47:20 by oseivane          #+#    #+#             */
-/*   Updated: 2024/04/11 12:13:48 by oseivane         ###   ########.fr       */
+/*   Updated: 2024/04/12 15:12:48 by mac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,37 +15,15 @@
 /*Funcion para comprobar que son digitos y que
 el numero de argumentos es el correcto, sino se
 imprime un mensaje de ayuda para orientar al usuario*/
-int	check_args(char **av)
-{
-	int	i;
-	int	j;
-
-	i = 1;
-	j = 0;
-	while (av[i])
-	{
-		while (av[i][j])
-		{
-			if (!ft_is_digit(av[i][j]))
-			{
-				print_error_msg(ARGS_RE_NBR);
-			}
-			j++;
-		}
-		j = 0;
-		i++;
-	}
-	return (0);
-}
 
 int	main(int ac, char **av)
 {
 	t_information	info;
 
 	memset(&info, 0, sizeof(t_information));
-	if (check_args(av))
+	if (check_args(ac, av))
 		return (EXIT_FAILURE);
-	init_info_with_args(&info, ac, av);
+	init_info(ac, av, &info);
 	if (init_mutexes(&info))
 		return (EXIT_FAILURE);
 	if (init_philo_info(&info))

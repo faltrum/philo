@@ -1,6 +1,7 @@
 {
 	"cmake.configureOnOpen": false,
 	"files.associations": {
-		"ios": "c"
+		"ios": "c",
+		"sstream": "c"
 	}
 }

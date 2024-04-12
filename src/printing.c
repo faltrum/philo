@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   printing.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:47:30 by oseivane          #+#    #+#             */
-/*   Updated: 2024/04/11 11:26:59 by oseivane         ###   ########.fr       */
+/*   Updated: 2024/04/12 15:10:53 by mac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ int	print_error_msg3(t_information *info)
 
 void	print_error_msg2(char *msg)
 {
+	printf("❌ %s ", ERROR_MSG);
 	if (!ft_strcmp(msg, ARGC_DIE_TIME))
 	{
 		printf("%s", COLOR_PURPLE);
@@ -48,6 +49,7 @@ void	print_error_msg2(char *msg)
 		printf("%s", COLOR_RED);
 		printf(" %s\n", ERROR_TIME);
 	}
+	exit(EXIT_FAILURE);
 }
 
 void	print_error_msg(char *msg)
@@ -60,8 +62,7 @@ void	print_error_msg(char *msg)
 		printf("%s", COLOR_RED);
 		printf(" %s\n", ERROR_NBR_INF_0);
 	}
-	print_error_msg2(msg);
-	if (!ft_strcmp(msg, ARGC_TIMES_EAT))
+	else if (!ft_strcmp(msg, ARGC_TIMES_EAT))
 	{
 		printf("%s", COLOR_DARK_GRAY);
 		printf("%s", ARGC_TIMES_EAT);

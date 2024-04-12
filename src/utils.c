@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:47:41 by oseivane          #+#    #+#             */
-/*   Updated: 2024/04/11 12:12:03 by oseivane         ###   ########.fr       */
+/*   Updated: 2024/04/12 16:16:27 by mac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,8 @@ int	ft_atoi(const char *str)
 		{
 			result = result * 10 + (str[i] - '0');
 			i++;
+			if (result > 2147483647)
+				print_error_msg(ERROR_NBR_INF_1);
 		}
 	}
 	return (result * sign);
@@ -70,5 +72,5 @@ void	pause_time(long wait_time)
 	start = get_time_in_ms();
 	usleep(wait_time * 850);
 	while (get_time_in_ms() - start < wait_time)
-		usleep(wait_time * 5);
+		usleep(wait_time * 6);
 }

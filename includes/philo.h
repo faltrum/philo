@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:46:57 by oseivane          #+#    #+#             */
-/*   Updated: 2024/04/11 12:06:25 by oseivane         ###   ########.fr       */
+/*   Updated: 2024/04/12 14:51:26 by mac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@
 # define ARGC_TIMES_EAT "[number_of_times_each_philosopher_must_eat]"
 # define ERROR_NBR_INF_0 "should be > 0 and <= 200"
 # define ERROR_NBR_INF_1 "should be > 0 and < 2147483648"
-# define ERROR_TIME "should be >= 60"
+# define ERROR_TIME "should be >= 60 and < 2147483648"
 # define ERROR_MUTEX_DISPLAY "pthread_mutex_init (info->display) fail !"
 # define ERROR_MUTEX_BARRIER "pthread_mutex_init (info->barrier) fail !"
 # define ERROR_MUTEX_REST "pthread_mutex_init (info->rest) fail !"
@@ -102,10 +102,10 @@ typedef struct s_information
 	struct s_philosophers		*philos_array;
 }	t_information;
 
-//Init the structures and checking arguments
-int			check_args(char **av);
-//void		init_info(t_information *info, char **av);
-void		init_info_with_args(t_information *info, int ac, char **av);
+//Checking arguments
+int			check_args(int ac, char **av);
+void		init_info(int ac, char **av, t_information *info);
+// void		init_info_with_args(t_information *info, int ac, char **av);
 int			init_mutexes(t_information *info);
 int			init_philo_info(t_information *info);
 int			init_philo_threads(t_information *info);
