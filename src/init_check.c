@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init_check.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:26:13 by oseivane          #+#    #+#             */
-/*   Updated: 2024/04/14 17:34:44 by mac              ###   ########.fr       */
+/*   Updated: 2024/04/15 10:17:25 by oseivane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,12 +29,14 @@ int	check_args(int ac, char **av)
 			print_error_msg(ERROR_NBR_INF_1);
 		else if ((ft_atoi(av[j]) < 1 || ft_atoi(av[j]) > 200) && j == 1)
 			print_error_msg(ARGC_NBR_PHILO);
-		else if ((ft_atoi(av[j]) < 60 || ft_atoi(av[j]) > INT_MAX - 1) && (j > 1 && j < 5))
+		else if ((ft_atoi(av[j]) < 60 || ft_atoi(av[j])
+				> INT_MAX - 1) && (j > 1 && j < 5))
 			print_error_msg(ERROR_TIME);
 		else if ((ft_atoi(av[j]) < 1 || ft_atoi(av[j]) > INT_MAX - 1) && j == 5)
 			print_error_msg(ERROR_NBR_INF_1);
 		while (av[j][i++] != '\0')
-			if ((av[j][i] >= 'a' && av[j][i] <= 'z') || (av[j][i] >= 'A' && av[j][i] <= 'Z'))
+			if ((av[j][i] >= 'a' && av[j][i] <= 'z')
+				|| (av[j][i] >= 'A' && av[j][i] <= 'Z'))
 				print_error_msg(ARGC_TIMES_EAT);
 	}
 	return (0);

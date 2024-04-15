@@ -6,11 +6,12 @@
 /*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:47:25 by oseivane          #+#    #+#             */
-/*   Updated: 2024/04/11 10:25:48 by oseivane         ###   ########.fr       */
+/*   Updated: 2024/04/15 10:15:52 by oseivane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
+
 /*Creacion de la funcion que imprime la informacion
 utiliza un mutex_lock/unlock para que no haya data race 
 en la impresion de la info*/

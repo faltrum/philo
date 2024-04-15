@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/04 10:47:41 by oseivane          #+#    #+#             */
-/*   Updated: 2024/04/12 16:16:27 by mac              ###   ########.fr       */
+/*   Created: 2024/04/15 10:12:55 by oseivane          #+#    #+#             */
+/*   Updated: 2024/04/15 10:15:06 by oseivane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ int	ft_strcmp(char *s1, char *s2)
 	return (s1[i] - s2[i]);
 }
 
+//Funcion que crea el tiempo en ms.
 long	get_time_in_ms(void)
 {
 	struct timeval	current_time;
@@ -65,6 +66,7 @@ long	get_time_in_ms(void)
 	return ((current_time.tv_sec * 1000) + (current_time.tv_usec / 1000));
 }
 
+//Funcion muy importante para gestionar los tiempos de cada accion
 void	pause_time(long wait_time)
 {
 	long	start;
