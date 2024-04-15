@@ -6,7 +6,7 @@
 /*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:25:28 by oseivane          #+#    #+#             */
-/*   Updated: 2024/04/15 10:13:21 by oseivane         ###   ########.fr       */
+/*   Updated: 2024/04/15 10:23:40 by oseivane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ void	*philo_routine(void *data)
 	return (NULL);
 }
 
+/*Checkea la muerte o el alcance maximo de comidas*/
 void	*checking(t_information *info)
 {
 	int	i;
@@ -70,7 +71,7 @@ void	*checking(t_information *info)
 	return (NULL);
 }
 
-/*Funcion para chequear si esta muerto y para lo todo
+/*Funcion para chequear si esta muerto y pararlo todo
 o si han acabado de comer la cantidad de veces indicada*/
 void	*check_dead_or_finish(void *data)
 {
@@ -85,6 +86,7 @@ void	*check_dead_or_finish(void *data)
 	return (NULL);
 }
 
+/*Funcion que lo para todo si ha muerto algun filosofo*/
 void	exec_death(t_information *info, int i)
 {
 	info->is_dead = 1;

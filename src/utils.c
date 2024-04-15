@@ -6,7 +6,7 @@
 /*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 10:12:55 by oseivane          #+#    #+#             */
-/*   Updated: 2024/04/15 10:15:06 by oseivane         ###   ########.fr       */
+/*   Updated: 2024/04/15 10:24:27 by oseivane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ int	ft_is_digit(char c)
 	return (0);
 }
 
+/*Ati modificado, fijarse en cuando es negativo y si
+supera MAX_INT*/
 int	ft_atoi(const char *str)
 {
 	int	i;

@@ -6,7 +6,7 @@
 /*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:26:13 by oseivane          #+#    #+#             */
-/*   Updated: 2024/04/15 10:17:25 by oseivane         ###   ########.fr       */
+/*   Updated: 2024/04/15 10:21:37 by oseivane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ int	init_mutexes(t_information *info)
 }
 
 /*Se inicializa los valores de la estructura philo, primero reservando 
-memoria para toda la informacion*/
+memoria para toda la informacion y guardando en un array*/
 int	init_philo_info(t_information *info)
 {
 	int				i;
@@ -114,9 +114,8 @@ int	init_philo_info(t_information *info)
 	return (0);
 }
 
-/*Comienzan los hilos de cada filosofo a crearse, controles de error,
-chequear si esta muerto o han acabado de comer, hacer joins otra vez y 
-destruir todos los hilos con sus liberaciones de memoria.*/
+/*Creacion de los threads, se desvinculan los del philo-routine
+con el detach y se realiza join del monitoreo cuando acaban*/
 int	init_philo_threads(t_information *info)
 {
 	int			i;
