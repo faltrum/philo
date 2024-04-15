@@ -6,7 +6,7 @@
 /*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:47:30 by oseivane          #+#    #+#             */
-/*   Updated: 2024/04/15 10:13:34 by oseivane         ###   ########.fr       */
+/*   Updated: 2024/04/15 13:35:07 by oseivane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int	print_error_msg3(t_information *info)
 	return (1);
 }
 
-void	print_error_msg2(char *msg)
+int	print_error_msg2(char *msg)
 {
 	printf("❌ %s ", ERROR_MSG);
 	if (!ft_strcmp(msg, ARGC_DIE_TIME))
@@ -49,10 +49,10 @@ void	print_error_msg2(char *msg)
 		printf("%s", COLOR_RED);
 		printf(" %s\n", ERROR_TIME);
 	}
-	exit(EXIT_FAILURE);
+	return (EXIT_FAILURE);
 }
 
-void	print_error_msg(char *msg)
+int	print_error_msg(char *msg)
 {
 	printf("❌ %s ", ERROR_MSG);
 	if (!ft_strcmp(msg, ARGC_NBR_PHILO))
@@ -74,11 +74,11 @@ void	print_error_msg(char *msg)
 		printf("%s", COLOR_RED);
 		printf("%s\n", msg);
 	}
-	exit(EXIT_FAILURE);
+	return (EXIT_FAILURE);
 }
 
 /*Imprimer la informacion de ayuda al usuario*/
-void	print_usage(void)
+int	print_usage(void)
 {
 	printf("%s", USAGE);
 	printf("%s", COLOR_BLUE);
@@ -98,6 +98,6 @@ void	print_usage(void)
 	printf("%s", NO_COLOR);
 	printf("%s", COLOR_DARK_GRAY);
 	printf(" %s", ARGC_TIMES_EAT);
-	printf("%s", NO_COLOR);
-	exit(EXIT_FAILURE);
+	printf("%s\n", NO_COLOR);
+	return (EXIT_FAILURE);
 }

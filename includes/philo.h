@@ -6,7 +6,7 @@
 /*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:46:57 by oseivane          #+#    #+#             */
-/*   Updated: 2024/04/15 10:36:07 by oseivane         ###   ########.fr       */
+/*   Updated: 2024/04/15 12:12:36 by oseivane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,8 @@
 # define ARGC_SLEEP_TIME "[time_to_sleep]"
 # define ARGC_TIMES_EAT "[number_of_times_each_philosopher_must_eat]"
 # define ERROR_NBR_INF_0 "should be > 0 and <= 200"
-# define ERROR_NBR_INF_1 "should be > 0 and < 2147483647"
-# define ERROR_TIME "should be >= 60 and < 2147483647"
+# define ERROR_NBR_INF_1 "should be > 0 and < 2147483648"
+# define ERROR_TIME "should be >= 60 and < 2147483648"
 # define ERROR_MUTEX_DISPLAY "pthread_mutex_init (info->display) fail !"
 # define ERROR_MUTEX_BARRIER "pthread_mutex_init (info->barrier) fail !"
 # define ERROR_MUTEX_REST "pthread_mutex_init (info->rest) fail !"
@@ -123,10 +123,10 @@ void		philo_eat_with_two_fork(t_philosophers *philo);
 void		exec_death(t_information *info, int i);
 
 //printing.c
-void		print_error_msg(char *msg);
-void		print_error_msg2(char *msg);
+int			print_error_msg(char *msg);
+int			print_error_msg2(char *msg);
 int			print_error_msg3(t_information *info);
-void		print_usage(void);
+int			print_usage(void);
 void		philo_display(t_philosophers *philo, int id, char *msg);
 
 //utils.c

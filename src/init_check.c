@@ -6,7 +6,7 @@
 /*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:26:13 by oseivane          #+#    #+#             */
-/*   Updated: 2024/04/15 10:33:22 by oseivane         ###   ########.fr       */
+/*   Updated: 2024/04/15 13:46:56 by oseivane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,30 +20,29 @@ int	check_args(int ac, char **av)
 	int	j;
 
 	if (ac < 5 || ac > 6)
-		print_usage();
+		return (print_usage());
 	j = 0;
 	while (++j <= ac -1)
 	{
 		i = 0;
-		if (ft_atoi(av[j]) > INT_MAX)
-			print_error_msg(ERROR_NBR_INF_1);
-		else if ((ft_atoi(av[j]) < 1 || ft_atoi(av[j]) > 200) && j == 1)
-			print_error_msg(ARGC_NBR_PHILO);
+		if ((ft_atoi(av[j]) < 1 || ft_atoi(av[j]) > 200) && j == 1)
+			return (print_error_msg(ARGC_NBR_PHILO));
 		else if ((ft_atoi(av[j]) < 60 || ft_atoi(av[j])
-				> INT_MAX - 1) && (j > 1 && j < 5))
-			print_error_msg(ERROR_TIME);
-		else if ((ft_atoi(av[j]) < 1 || ft_atoi(av[j]) > INT_MAX - 1) && j == 5)
-			print_error_msg(ERROR_NBR_INF_1);
+				> INT_MAX) && (j > 1 && j < 5))
+			return (print_error_msg(ERROR_TIME));
+		else if ((ft_atoi(av[j]) < 1 || ft_atoi(av[j]) > INT_MAX) && j == 5)
+			return (print_error_msg(ERROR_NBR_INF_1));
 		while (av[j][i++] != '\0')
 			if ((av[j][i] >= 'a' && av[j][i] <= 'z')
 				|| (av[j][i] >= 'A' && av[j][i] <= 'Z'))
-				print_error_msg(ARGS_RE_NBR);
+				return (print_error_msg(ARGS_RE_NBR));
 	}
 	return (0);
 }
 
 void	init_info(int ac, char **av, t_information *info)
 {
+	printf("ENtrado en init info\n");
 	info->nbr_philo = ft_atoi(av[1]);
 	info->die_time = ft_atoi(av[2]);
 	info->eat_time = ft_atoi(av[3]);
@@ -72,20 +71,20 @@ int	init_mutexes(t_information *info)
 	mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t)
 			* info->nbr_philo);
 	if (!mutex)
-		print_error_msg(ERROR_MALLOC_MUTEX);
+		return (print_error_msg(ERROR_MALLOC_MUTEX));
 	while (i < info->nbr_philo)
 	{
 		if (pthread_mutex_init(&mutex[i], NULL))
-			print_error_msg(ERROR_MUTEX);
+			return (print_error_msg(ERROR_MUTEX));
 		i++;
 	}
 	info->forks = mutex;
 	if (pthread_mutex_init(&info->barrier, NULL))
-		print_error_msg(ERROR_MUTEX_BARRIER);
+		return (print_error_msg(ERROR_MUTEX_BARRIER));
 	if (pthread_mutex_init(&info->display, NULL))
-		print_error_msg(ERROR_MUTEX_DISPLAY);
+		return (print_error_msg(ERROR_MUTEX_DISPLAY));
 	if (pthread_mutex_init(&info->meals_mtx, NULL))
-		print_error_msg(ERROR_MUTEX_MEALS);
+		return (print_error_msg(ERROR_MUTEX_MEALS));
 	return (0);
 }
 
@@ -98,7 +97,7 @@ int	init_philo_info(t_information *info)
 
 	philo = (t_philosophers *)malloc(sizeof(t_philosophers) * info->nbr_philo);
 	if (!(philo))
-		print_error_msg(ERROR_MALLOC_PHILO);
+		return (print_error_msg(ERROR_MALLOC_PHILO));
 	i = 0;
 	while (i < info->nbr_philo)
 	{
@@ -124,20 +123,20 @@ int	init_philo_threads(t_information *info)
 	i = 0;
 	philo = (pthread_t *)malloc(sizeof(pthread_t) * info->nbr_philo);
 	if (!philo)
-		print_error_msg(ERROR_MALLOC_PHILO);
+		return (print_error_msg(ERROR_MALLOC_PHILO));
 	info->philos_th = philo;
 	while (i < info->nbr_philo)
 	{
 		if (pthread_create(&philo[i],
 				NULL, &philo_routine, (void *)&info->philos_array[i]) != 0)
-			print_error_msg(ERROR_START_PHILO);
+			return (print_error_msg(ERROR_START_PHILO));
 		if (pthread_detach(philo[i]) != 0)
-			print_error_msg(ERROR_DETACH_PHILO);
+			return (print_error_msg(ERROR_DETACH_PHILO));
 		i++;
 	}
 	if (pthread_create(&info->check_death, NULL,
 			&check_dead_or_finish, (void *)info) != 0)
-		print_error_msg3(info);
+		return (print_error_msg3(info));
 	pthread_join(info->check_death, NULL);
 	return (0);
 }
