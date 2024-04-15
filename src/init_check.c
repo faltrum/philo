@@ -6,7 +6,7 @@
 /*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:26:13 by oseivane          #+#    #+#             */
-/*   Updated: 2024/04/15 10:21:37 by oseivane         ###   ########.fr       */
+/*   Updated: 2024/04/15 10:33:22 by oseivane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ int	check_args(int ac, char **av)
 		while (av[j][i++] != '\0')
 			if ((av[j][i] >= 'a' && av[j][i] <= 'z')
 				|| (av[j][i] >= 'A' && av[j][i] <= 'Z'))
-				print_error_msg(ARGC_TIMES_EAT);
+				print_error_msg(ARGS_RE_NBR);
 	}
 	return (0);
 }

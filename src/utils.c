@@ -6,7 +6,7 @@
 /*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 10:12:55 by oseivane          #+#    #+#             */
-/*   Updated: 2024/04/15 10:24:27 by oseivane         ###   ########.fr       */
+/*   Updated: 2024/04/15 10:38:29 by oseivane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ int	ft_atoi(const char *str)
 		{
 			result = result * 10 + (str[i] - '0');
 			i++;
-			if (result > 2147483647)
+			if (result >= 2147483647)
 				print_error_msg(ERROR_NBR_INF_1);
 		}
 	}
