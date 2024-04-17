@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init_check.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:26:13 by oseivane          #+#    #+#             */
-/*   Updated: 2024/04/15 13:46:56 by oseivane         ###   ########.fr       */
+/*   Updated: 2024/04/17 14:13:35 by mac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,6 @@ int	check_args(int ac, char **av)
 
 void	init_info(int ac, char **av, t_information *info)
 {
-	printf("ENtrado en init info\n");
 	info->nbr_philo = ft_atoi(av[1]);
 	info->die_time = ft_atoi(av[2]);
 	info->eat_time = ft_atoi(av[3]);

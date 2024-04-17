@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oseivane <oseivane@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 10:46:57 by oseivane          #+#    #+#             */
-/*   Updated: 2024/04/15 12:12:36 by oseivane         ###   ########.fr       */
+/*   Updated: 2024/04/17 14:14:32 by mac              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,6 @@ typedef struct s_information
 //Checking arguments
 int			check_args(int ac, char **av);
 void		init_info(int ac, char **av, t_information *info);
-// void		init_info_with_args(t_information *info, int ac, char **av);
 int			init_mutexes(t_information *info);
 int			init_philo_info(t_information *info);
 int			init_philo_threads(t_information *info);
